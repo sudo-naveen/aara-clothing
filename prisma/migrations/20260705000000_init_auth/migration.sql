@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "OrderStatus" AS ENUM ('PENDING', 'PROCESSING', 'DELIVERED', 'CANCELLED');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
