@@ -39,6 +39,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-aara-primary: var(--aara-primary);
+  --color-aara-secondary: var(--aara-secondary);
+  --color-aara-accent: var(--aara-accent);
+  --color-aara-highlight: var(--aara-highlight);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -49,7 +53,7 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
+  --background: oklch(0.97 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
@@ -72,7 +76,15 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.75rem;
+
+  /* Aara brand colors */
+  --aara-primary: #273338;
+  --aara-secondary: #2B5748;
+  --aara-accent: #618764;
+  --aara-highlight: #9CB080;
+
+  /* Sidebar */
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -107,6 +119,13 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+
+  /* Aara brand colors (dark mode) */
+  --aara-primary: #273338;
+  --aara-secondary: #2B5748;
+  --aara-accent: #618764;
+  --aara-highlight: #9CB080;
+
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -127,4 +146,41 @@
   html {
     @apply font-sans;
   }
+}
+
+/* Sidebar transitions */
+@keyframes sidebar-slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes sidebar-slide-out {
+  from { transform: translateX(0); }
+  to { transform: translateX(-100%); }
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes overlay-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.sidebar-open {
+  animation: sidebar-slide-in 200ms ease-out forwards;
+}
+
+.sidebar-close {
+  animation: sidebar-slide-out 200ms ease-in forwards;
+}
+
+.overlay-open {
+  animation: overlay-fade-in 200ms ease-out forwards;
+}
+
+.overlay-close {
+  animation: overlay-fade-out 200ms ease-in forwards;
 }

@@ -18,8 +18,8 @@ export default async function EditOrderPage({ params }: Props) {
 
   if (order.status !== "PENDING") {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Cannot Edit Order</h1>
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">Cannot Edit Order</h2>
         <p className="text-muted-foreground">
           Only pending orders can be edited. This order is currently {order.status.toLowerCase()}.
         </p>
@@ -36,7 +36,11 @@ export default async function EditOrderPage({ params }: Props) {
   }));
 
   return (
-    <div className="p-6">
+    <div>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold tracking-tight">Edit Order</h2>
+        <p className="text-sm text-muted-foreground">Update order details</p>
+      </div>
       <OrderForm
         customerId={customerId}
         orderId={orderId}

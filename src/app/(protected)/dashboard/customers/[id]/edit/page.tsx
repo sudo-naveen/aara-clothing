@@ -15,10 +15,10 @@ export default async function EditCustomerPage({ params }: Props) {
   }
 
   return (
-    <div className="p-6">
+    <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Edit Customer</h1>
-        <p className="text-muted-foreground">Update customer information</p>
+        <h2 className="text-xl font-semibold tracking-tight">Edit Customer</h2>
+        <p className="text-sm text-muted-foreground">Update customer information</p>
       </div>
       <CustomerForm
         mode="edit"

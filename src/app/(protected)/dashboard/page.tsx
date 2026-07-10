@@ -13,11 +13,11 @@ export default async function DashboardPage() {
   const stats = await getDashboardStats();
 
   return (
-    <div className="p-6">
+    <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">
-          Welcome back, {session.user.username}
+        <h2 className="text-xl font-semibold tracking-tight">Dashboard Overview</h2>
+        <p className="text-sm text-muted-foreground">
+          Here&apos;s what&apos;s happening with your store today
         </p>
       </div>
       <DashboardWidgets stats={stats} />

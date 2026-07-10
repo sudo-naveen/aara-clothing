@@ -21,11 +21,11 @@ export default async function CustomersPage({
   const result = await listCustomers(query);
 
   return (
-    <div className="p-6">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Customers</h1>
-          <p className="text-muted-foreground">
+          <h2 className="text-xl font-semibold tracking-tight">Customers</h2>
+          <p className="text-sm text-muted-foreground">
             Manage your customer database
           </p>
         </div>

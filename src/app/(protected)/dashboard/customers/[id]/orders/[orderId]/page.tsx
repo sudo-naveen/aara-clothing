@@ -32,21 +32,21 @@ export default async function OrderDetailPage({ params }: Props) {
   const allowedTransitions = ORDER_STATUS_FLOW[order.status as keyof typeof ORDER_STATUS_FLOW] ?? [];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link
             href={`/dashboard/customers/${customerId}`}
-            className="text-muted-foreground hover:text-foreground"
+            className="flex size-9 items-center justify-center rounded-xl border border-border transition-colors duration-200 hover:bg-muted"
           >
             <ArrowLeft className="size-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight">
+            <h2 className="text-xl font-semibold tracking-tight">
               Order #{order.orderNumber}
-            </h1>
-            <p className="text-muted-foreground">
+            </h2>
+            <p className="text-sm text-muted-foreground">
               {customer.name} — {customer.phone}
             </p>
           </div>

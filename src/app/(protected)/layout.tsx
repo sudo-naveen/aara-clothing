@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
-import { SignOutButton } from "@/features/auth/sign-out-button";
+import { Sidebar } from "@/components/sidebar";
+import { MobileSidebar } from "@/components/mobile-sidebar";
+import { Header } from "@/components/header";
 
 export default async function ProtectedLayout({
   children,
@@ -17,52 +17,27 @@ export default async function ProtectedLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="border-b bg-background">
-        <div className="flex h-14 items-center justify-between px-6">
-          <Link
-            href={ROUTES.DASHBOARD}
-            className="flex items-center"
-          >
-            <Image
-              src="/aara-logo-white.png"
-              alt="Aara Clothing"
-              height={32}
-              width={64}
-              className="h-8 w-auto"
-              priority
-            />
-          </Link>
-          <nav className="flex items-center gap-6">
-            <Link
-              href={ROUTES.DASHBOARD}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href={ROUTES.INVENTORY}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Inventory
-            </Link>
-            <Link
-              href={ROUTES.CUSTOMERS}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Customers
-            </Link>
-            <Link
-              href={ROUTES.SETTINGS}
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Settings
-            </Link>
-            <SignOutButton />
-          </nav>
+    <div className="min-h-screen bg-background">
+      {/* Mobile Sidebar (hamburger) */}
+      <MobileSidebar />
+
+      {/* Desktop Sidebar */}
+      <Sidebar />
+
+      {/* Main Content Area */}
+      <div className="lg:pl-64">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          {/* Header with Greeting + Actions */}
+          <Header />
+
+          {/* Page Content */}
+          <main>
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              {children}
+            </div>
+          </main>
         </div>
-      </header>
-      <main className="flex-1">{children}</main>
+      </div>
     </div>
   );
 }

@@ -18,10 +18,10 @@ export default async function InventoryStockPage({
   const result = await listInventory(query);
 
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold tracking-tight">Stock</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold tracking-tight">Stock Management</h2>
+        <p className="text-sm text-muted-foreground">
           Manage stock levels for all product variants
         </p>
       </div>

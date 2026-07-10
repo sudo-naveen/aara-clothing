@@ -28,7 +28,7 @@ export function DataTable<T>({
   actions,
 }: DataTableProps<T>) {
   return (
-    <Card>
+    <Card className="border-border">
       {(title || actions) && (
         <CardHeader className="flex flex-row items-center justify-between">
           {title && <CardTitle>{title}</CardTitle>}
@@ -39,7 +39,7 @@ export function DataTable<T>({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b text-left">
+              <tr className="border-b border-border text-left">
                 {columns.map((col) => (
                   <th
                     key={col.key}
@@ -73,7 +73,7 @@ export function DataTable<T>({
                 data.map((item) => (
                   <tr
                     key={keyExtractor(item)}
-                    className="border-b last:border-0 hover:bg-muted/50"
+                    className="border-b border-border last:border-0 transition-colors duration-150 hover:bg-muted/50"
                   >
                     {columns.map((col) => (
                       <td

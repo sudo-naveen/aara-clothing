@@ -5,7 +5,7 @@ import { getCustomerOrderStats, listOrders } from "@/features/orders/orders-serv
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Plus, Package, ShoppingBag, Calendar } from "lucide-react";
+import { Pencil, Plus, Package, ShoppingBag, Calendar } from "lucide-react";
 import { ORDER_STATUS_LABELS } from "@/lib/constants";
 
 interface Props {
@@ -26,12 +26,12 @@ export default async function CustomerProfilePage({ params }: Props) {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{customer.name}</h1>
-          <p className="text-muted-foreground">Customer Profile</p>
+          <h2 className="text-xl font-semibold tracking-tight">{customer.name}</h2>
+          <p className="text-sm text-muted-foreground">Customer Profile</p>
         </div>
         <div className="flex gap-2">
           <Link href={`/dashboard/customers/${id}/edit`}>
