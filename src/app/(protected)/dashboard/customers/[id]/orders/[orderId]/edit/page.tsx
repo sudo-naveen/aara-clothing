@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getOrderById } from "@/features/orders/orders-service";
 import { getCustomerById } from "@/features/customers/customers-service";
 import { OrderForm } from "@/features/orders/order-form";
-import { ORDER_STATUS_LABELS } from "@/lib/constants";
+import { ORDER_STATUS_LABELS, ORDER_STATUSES } from "@/lib/constants";
 
 interface Props {
   params: Promise<{ id: string; orderId: string }>;
@@ -17,7 +17,7 @@ export default async function EditOrderPage({ params }: Props) {
   const order = await getOrderById(orderId);
   if (!order || order.customerId !== customerId) notFound();
 
-  if (order.status !== "PENDING") {
+  if ((order.status as string) !== ORDER_STATUSES.PENDING) {
     return (
       <div>
         <h2 className="text-xl font-semibold tracking-tight">Cannot Edit Order</h2>

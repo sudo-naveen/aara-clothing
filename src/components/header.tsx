@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Search, Bell, User } from "lucide-react";
+import { NotificationBell } from "@/components/notification-bell";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -19,43 +19,24 @@ function getFormattedDate() {
 
 export function Header({ username }: { username: string }) {
   return (
-    <div className="mb-6 grid gap-4 sm:grid-cols-2">
-      {/* Greeting Card */}
-      <Card className="relative overflow-hidden border-0 bg-gradient-to-br from-[var(--aara-secondary)] to-[var(--aara-accent)] p-6 text-white shadow-lg">
-        <div className="relative z-10">
+    <Card className="relative mb-6 overflow-hidden border-0 bg-gradient-to-br from-[var(--aara-secondary)] to-[var(--aara-accent)] p-6 text-white shadow-lg shadow-aara-secondary/20">
+      <div className="relative z-10 flex items-start justify-between">
+        <div>
           <h1 className="text-2xl font-semibold tracking-tight">
             {getGreeting()}, {username}
           </h1>
-          <p className="mt-1 text-sm text-white/80">
+          <p className="mt-1.5 text-sm text-white/70">
             {getFormattedDate()}
           </p>
         </div>
-        {/* Decorative element */}
-        <div className="absolute -right-8 -top-8 size-32 rounded-full bg-white/10" />
-        <div className="absolute -bottom-4 -right-4 size-24 rounded-full bg-white/5" />
-      </Card>
-
-      {/* Actions Card */}
-      <Card className="flex items-center justify-around border-border p-6 shadow-sm">
-        <button className="flex flex-col items-center gap-2 rounded-xl p-3 transition-colors duration-200 hover:bg-muted">
-          <div className="flex size-10 items-center justify-center rounded-full bg-muted">
-            <Search className="size-5 text-muted-foreground" />
-          </div>
-          <span className="text-xs font-medium text-muted-foreground">Search</span>
-        </button>
-        <button className="flex flex-col items-center gap-2 rounded-xl p-3 transition-colors duration-200 hover:bg-muted">
-          <div className="flex size-10 items-center justify-center rounded-full bg-muted">
-            <Bell className="size-5 text-muted-foreground" />
-          </div>
-          <span className="text-xs font-medium text-muted-foreground">Alerts</span>
-        </button>
-        <button className="flex flex-col items-center gap-2 rounded-xl p-3 transition-colors duration-200 hover:bg-muted">
-          <div className="flex size-10 items-center justify-center rounded-full bg-muted">
-            <User className="size-5 text-muted-foreground" />
-          </div>
-          <span className="text-xs font-medium text-muted-foreground">Profile</span>
-        </button>
-      </Card>
-    </div>
+        <NotificationBell />
+      </div>
+      {/* Decorative elements */}
+      <div className="absolute -right-8 -top-8 size-32 rounded-full bg-white/10" />
+      <div className="absolute -bottom-6 -right-6 size-24 rounded-full bg-white/5" />
+      <div className="absolute -left-4 -bottom-4 size-16 rounded-full bg-white/5" />
+      {/* Subtle mesh overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/5" />
+    </Card>
   );
 }

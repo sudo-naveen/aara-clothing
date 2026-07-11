@@ -9,7 +9,6 @@ import { loginSchema, type LoginInput } from "@/features/auth/auth-validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
 export function LoginForm() {
@@ -55,55 +54,57 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full border-border shadow-elevated">
-      <CardContent className="p-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {error && (
-            <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-3.5 text-sm text-destructive">
-              {error}
-            </div>
-          )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      {error && (
+        <div className="rounded-xl bg-destructive/15 border border-destructive/20 p-3.5 text-sm text-destructive backdrop-blur-sm">
+          {error}
+        </div>
+      )}
 
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              type="text"
-              placeholder="Enter your username"
-              disabled={isLoading}
-              {...register("username")}
-            />
-            {errors.username && (
-              <p className="text-sm text-destructive">{errors.username.message}</p>
-            )}
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="username" className="text-white/80">Username</Label>
+        <Input
+          id="username"
+          type="text"
+          placeholder="Enter your username"
+          disabled={isLoading}
+          className="border-white/10 bg-white/5 text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-primary/50"
+          {...register("username")}
+        />
+        {errors.username && (
+          <p className="text-sm text-destructive">{errors.username.message}</p>
+        )}
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              disabled={isLoading}
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
-            )}
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="password" className="text-white/80">Password</Label>
+        <Input
+          id="password"
+          type="password"
+          placeholder="Enter your password"
+          disabled={isLoading}
+          className="border-white/10 bg-white/5 text-white placeholder:text-white/30 focus-visible:ring-primary/50 focus-visible:border-primary/50"
+          {...register("password")}
+        />
+        {errors.password && (
+          <p className="text-sm text-destructive">{errors.password.message}</p>
+        )}
+      </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              "Sign in"
-            )}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <Button
+        type="submit"
+        className="w-full gradient-accent text-white shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-200"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Signing in...
+          </>
+        ) : (
+          "Sign in"
+        )}
+      </Button>
+    </form>
   );
 }

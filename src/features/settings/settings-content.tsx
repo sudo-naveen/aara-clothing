@@ -21,7 +21,9 @@ export function SettingsContent({ name, username }: SettingsContentProps) {
   }
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="relative space-y-6 p-8">
+      <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-56 rounded-full bg-aara-accent/8 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 -z-10 size-40 rounded-full bg-aara-highlight/8 blur-3xl" />
       <div className="flex items-center gap-3">
         <div className="flex size-10 items-center justify-center rounded-xl gradient-accent">
           <Settings className="size-5 text-white" />

@@ -32,9 +32,11 @@ export default async function OrderDetailPage({ params }: Props) {
   const allowedTransitions = ORDER_STATUS_FLOW[order.status as keyof typeof ORDER_STATUS_FLOW] ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="relative space-y-6">
+      <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-56 rounded-full bg-aara-accent/8 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 -z-10 size-40 rounded-full bg-aara-highlight/8 blur-3xl" />
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-8 pt-8">
         <div className="flex items-center gap-4">
           <Link
             href={`/dashboard/customers/${customerId}`}
@@ -55,7 +57,7 @@ export default async function OrderDetailPage({ params }: Props) {
           <Badge variant={statusVariant[order.status] ?? "secondary"} className="text-sm px-3 py-1">
             {ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] ?? order.status}
           </Badge>
-          {order.status === "PENDING" && (
+          {(order.status as string) === "PENDING" && (
             <Link href={`/dashboard/customers/${customerId}/orders/${orderId}/edit`}>
               <Button variant="outline" size="sm">
                 <Pencil className="size-4" />
@@ -67,7 +69,7 @@ export default async function OrderDetailPage({ params }: Props) {
       </div>
 
       {/* Order Items */}
-      <Card>
+      <Card className="mx-8">
         <CardHeader>
           <CardTitle>Order Items</CardTitle>
         </CardHeader>
@@ -75,16 +77,16 @@ export default async function OrderDetailPage({ params }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left">
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Product</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Variant</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">SKU</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Qty</th>
+                <tr className="sticky top-0 border-b border-border/50 bg-muted/20 backdrop-blur-sm">
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Variant</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">SKU</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Qty</th>
                 </tr>
               </thead>
               <tbody>
-                {order.items.map((item) => (
-                  <tr key={item.id} className="border-b last:border-0">
+                {order.items.map((item, index) => (
+                  <tr key={item.id} className={`border-b border-border/30 last:border-0 table-row-hover ${index % 2 === 1 ? "bg-muted/5" : ""}`}>
                     <td className="px-4 py-3 font-medium">
                       {item.variant.product.name}
                     </td>
@@ -104,7 +106,7 @@ export default async function OrderDetailPage({ params }: Props) {
       </Card>
 
       {/* Order Info */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 px-8 pb-8 sm:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Order Details</CardTitle>

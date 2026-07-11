@@ -53,89 +53,6 @@
 }
 
 :root {
-<<<<<<< HEAD
-  --background: oklch(0.97 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.75rem;
-
-  /* Aara brand colors */
-  --aara-primary: #273338;
-  --aara-secondary: #2B5748;
-  --aara-accent: #618764;
-  --aara-highlight: #9CB080;
-
-  /* Sidebar */
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-
-  /* Aara brand colors (dark mode) */
-  --aara-primary: #273338;
-  --aara-secondary: #2B5748;
-  --aara-accent: #618764;
-  --aara-highlight: #9CB080;
-
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-=======
   --background: oklch(0.08 0.02 170);
   --foreground: oklch(0.95 0.01 170);
   --card: oklch(0.12 0.02 170);
@@ -160,6 +77,14 @@
   --chart-4: oklch(0.65 0.08 165);
   --chart-5: oklch(0.35 0.08 165);
   --radius: 0.75rem;
+
+  /* Aara brand colors */
+  --aara-primary: #273338;
+  --aara-secondary: #2B5748;
+  --aara-accent: #618764;
+  --aara-highlight: #9CB080;
+
+  /* Sidebar */
   --sidebar: oklch(0.06 0.02 170);
   --sidebar-foreground: oklch(0.95 0.01 170);
   --sidebar-primary: oklch(0.55 0.10 165);
@@ -168,7 +93,6 @@
   --sidebar-accent-foreground: oklch(0.95 0.01 170);
   --sidebar-border: oklch(0.22 0.02 170);
   --sidebar-ring: oklch(0.55 0.10 165);
->>>>>>> f2172a4 (added settings)
 }
 
 @layer base {
@@ -183,43 +107,6 @@
   }
 }
 
-<<<<<<< HEAD
-/* Sidebar transitions */
-@keyframes sidebar-slide-in {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(0); }
-}
-
-@keyframes sidebar-slide-out {
-  from { transform: translateX(0); }
-  to { transform: translateX(-100%); }
-}
-
-@keyframes overlay-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes overlay-fade-out {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-.sidebar-open {
-  animation: sidebar-slide-in 200ms ease-out forwards;
-}
-
-.sidebar-close {
-  animation: sidebar-slide-out 200ms ease-in forwards;
-}
-
-.overlay-open {
-  animation: overlay-fade-in 200ms ease-out forwards;
-}
-
-.overlay-close {
-  animation: overlay-fade-out 200ms ease-in forwards;
-=======
 @layer utilities {
   .shadow-card {
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.2);
@@ -260,6 +147,64 @@
   .gradient-subtle {
     background: linear-gradient(180deg, oklch(0.12 0.02 170) 0%, oklch(0.08 0.02 170) 100%);
   }
+
+  /* Glassmorphism */
+  .glass {
+    background: oklch(0.12 0.02 170 / 0.6);
+    backdrop-filter: blur(16px) saturate(1.5);
+    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    border: 1px solid oklch(1 0 0 / 0.08);
+  }
+  .glass-strong {
+    background: oklch(0.12 0.02 170 / 0.75);
+    backdrop-filter: blur(24px) saturate(1.8);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid oklch(1 0 0 / 0.12);
+  }
+
+  /* Decorative blobs */
+  .blob-primary {
+    background: radial-gradient(circle, oklch(0.45 0.10 165 / 0.15) 0%, transparent 70%);
+  }
+  .blob-accent {
+    background: radial-gradient(circle, oklch(0.55 0.10 165 / 0.1) 0%, transparent 70%);
+  }
+
+  /* Mesh gradient for backgrounds */
+  .mesh-bg {
+    background:
+      radial-gradient(at 20% 20%, oklch(0.45 0.10 165 / 0.08) 0%, transparent 50%),
+      radial-gradient(at 80% 80%, oklch(0.55 0.10 165 / 0.06) 0%, transparent 50%),
+      radial-gradient(at 50% 50%, oklch(0.35 0.08 165 / 0.04) 0%, transparent 50%);
+  }
+
+  /* Table row hover */
+  .table-row-hover {
+    transition: background-color 150ms ease;
+  }
+  .table-row-hover:hover {
+    background-color: oklch(0.15 0.02 170 / 0.5);
+  }
+
+  /* Card shine effect */
+  .card-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .card-shine::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      oklch(1 0 0 / 0.02) 45%,
+      oklch(1 0 0 / 0.05) 50%,
+      oklch(1 0 0 / 0.02) 55%,
+      transparent 60%
+    );
+    pointer-events: none;
+  }
 }
 
 @layer base {
@@ -291,5 +236,28 @@
       transform: scale(1);
     }
   }
->>>>>>> f2172a4 (added settings)
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes pulse-soft {
+    0%, 100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
 }

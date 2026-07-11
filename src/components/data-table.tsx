@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Inbox } from "lucide-react";
 
 export interface Column<T> {
   key: string;
@@ -15,6 +16,7 @@ interface DataTableProps<T = any> {
   keyExtractor: (item: T) => string;
   isLoading?: boolean;
   emptyMessage?: string;
+  emptyDescription?: string;
   actions?: React.ReactNode;
 }
 
@@ -25,12 +27,13 @@ export function DataTable<T>({
   keyExtractor,
   isLoading,
   emptyMessage = "No data found",
+  emptyDescription,
   actions,
 }: DataTableProps<T>) {
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden rounded-2xl border-border/50">
       {(title || actions) && (
-        <CardHeader className="flex flex-row items-center justify-between border-b border-border bg-muted/20">
+        <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 bg-muted/10">
           {title && <CardTitle>{title}</CardTitle>}
           {actions}
         </CardHeader>
@@ -39,7 +42,7 @@ export function DataTable<T>({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="sticky top-0 border-b border-border bg-muted/30 backdrop-blur-sm">
+              <tr className="sticky top-0 border-b border-border/50 bg-muted/20 backdrop-blur-sm">
                 {columns.map((col) => (
                   <th
                     key={col.key}
@@ -62,19 +65,28 @@ export function DataTable<T>({
                 </tr>
               ) : data.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan={columns.length}
-                    className="px-4 py-16 text-center text-muted-foreground"
-                  >
-                    {emptyMessage}
+                  <td colSpan={columns.length} className="px-4 py-16">
+                    <div className="flex flex-col items-center justify-center text-center">
+                      <div className="mb-3 flex size-12 items-center justify-center rounded-2xl bg-muted/50">
+                        <Inbox className="size-6 text-muted-foreground/60" />
+                      </div>
+                      <p className="text-sm font-medium text-foreground">
+                        {emptyMessage}
+                      </p>
+                      {emptyDescription && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {emptyDescription}
+                        </p>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ) : (
                 data.map((item, index) => (
                   <tr
                     key={keyExtractor(item)}
-                    className={`border-b border-border last:border-0 transition-colors duration-150 hover:bg-muted/20 ${
-                      index % 2 === 1 ? "bg-muted/10" : ""
+                    className={`border-b border-border/30 last:border-0 table-row-hover ${
+                      index % 2 === 1 ? "bg-muted/5" : ""
                     }`}
                   >
                     {columns.map((col) => (

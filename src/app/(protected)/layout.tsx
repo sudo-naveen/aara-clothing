@@ -32,12 +32,12 @@ export default async function ProtectedLayout({
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
         <div className="pin-stripe absolute inset-0 opacity-30 pointer-events-none" />
         <div className="relative flex h-16 items-center justify-between px-6">
           <div className="flex items-center gap-8">
-            <Link href={ROUTES.DASHBOARD} className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-lg gradient-accent">
+            <Link href={ROUTES.DASHBOARD} className="flex items-center gap-3 transition-opacity hover:opacity-90">
+              <div className="flex size-9 items-center justify-center rounded-xl gradient-accent shadow-md shadow-primary/20">
                 <Package2 className="size-5 text-white" />
               </div>
               <span className="text-lg font-bold tracking-tight text-foreground">
@@ -52,9 +52,9 @@ export default async function ProtectedLayout({
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all duration-150 hover:bg-accent/10 hover:text-foreground"
+                    className="group flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium text-muted-foreground transition-all duration-200 hover:bg-accent/10 hover:text-foreground hover:shadow-sm"
                   >
-                    <Icon className="size-4 transition-colors duration-150 group-hover:text-primary" />
+                    <Icon className="size-4 transition-colors duration-200 group-hover:text-primary" />
                     {item.label}
                   </Link>
                 );
@@ -62,13 +62,7 @@ export default async function ProtectedLayout({
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 rounded-lg border border-border bg-muted/30 px-3 py-1.5">
-              <div className="size-2 rounded-full bg-primary animate-pulse" />
-              <span className="text-xs text-muted-foreground">
-                {session.user.username}
-              </span>
-            </div>
+          <div className="flex items-center">
             <SignOutButton />
           </div>
         </div>
