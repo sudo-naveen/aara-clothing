@@ -66,7 +66,7 @@ export function OrderTable({ data, customerId }: Props) {
               <Eye className="size-4" />
             </Button>
           </Link>
-          {item.status === "PENDING" && (
+          {(item.status as string) === "PENDING" && (
             <Link href={`/dashboard/customers/${customerId}/orders/${item.id}/edit`}>
               <Button variant="ghost" size="icon-sm">
                 <Pencil className="size-4" />

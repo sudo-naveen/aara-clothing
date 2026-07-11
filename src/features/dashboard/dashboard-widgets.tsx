@@ -29,43 +29,55 @@ export function DashboardWidgets({ stats }: Props) {
       title: "Today's Orders",
       value: stats.todayOrders,
       icon: ShoppingBag,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      gradient: "from-primary/20 to-primary/5",
+      iconBg: "bg-primary/15",
+      iconColor: "text-primary",
+      accent: "group-hover:shadow-primary/10",
     },
     {
       title: "Pending Orders",
       value: stats.pendingOrders,
       icon: Clock,
-      color: "text-secondary",
-      bgColor: "bg-secondary/10",
+      gradient: "from-secondary/20 to-secondary/5",
+      iconBg: "bg-secondary/15",
+      iconColor: "text-secondary",
+      accent: "group-hover:shadow-secondary/10",
     },
     {
-      title: "Processing Orders",
+      title: "Processing",
       value: stats.processingOrders,
       icon: Truck,
-      color: "text-secondary",
-      bgColor: "bg-secondary/10",
+      gradient: "from-secondary/15 to-secondary/5",
+      iconBg: "bg-secondary/10",
+      iconColor: "text-secondary",
+      accent: "group-hover:shadow-secondary/10",
     },
     {
-      title: "Delivered Orders",
+      title: "Delivered",
       value: stats.deliveredOrders,
       icon: CheckCircle,
-      color: "text-primary",
-      bgColor: "bg-primary/10",
+      gradient: "from-primary/15 to-primary/5",
+      iconBg: "bg-primary/10",
+      iconColor: "text-primary",
+      accent: "group-hover:shadow-primary/10",
     },
     {
       title: "Low Stock",
       value: stats.lowStockProducts,
       icon: AlertTriangle,
-      color: stats.lowStockProducts > 0 ? "text-amber-600" : "text-muted-foreground",
-      bgColor: stats.lowStockProducts > 0 ? "bg-amber-500/10" : "bg-muted",
+      gradient: stats.lowStockProducts > 0 ? "from-amber-500/15 to-amber-500/5" : "from-muted/50 to-muted/20",
+      iconBg: stats.lowStockProducts > 0 ? "bg-amber-500/15" : "bg-muted/50",
+      iconColor: stats.lowStockProducts > 0 ? "text-amber-500" : "text-muted-foreground",
+      accent: stats.lowStockProducts > 0 ? "group-hover:shadow-amber-500/10" : "",
     },
     {
       title: "Out of Stock",
       value: stats.outOfStockProducts,
       icon: XCircle,
-      color: stats.outOfStockProducts > 0 ? "text-destructive" : "text-muted-foreground",
-      bgColor: stats.outOfStockProducts > 0 ? "bg-destructive/10" : "bg-muted",
+      gradient: stats.outOfStockProducts > 0 ? "from-destructive/15 to-destructive/5" : "from-muted/50 to-muted/20",
+      iconBg: stats.outOfStockProducts > 0 ? "bg-destructive/15" : "bg-muted/50",
+      iconColor: stats.outOfStockProducts > 0 ? "text-destructive" : "text-muted-foreground",
+      accent: stats.outOfStockProducts > 0 ? "group-hover:shadow-destructive/10" : "",
     },
   ];
 
@@ -76,14 +88,14 @@ export function DashboardWidgets({ stats }: Props) {
         return (
           <Card
             key={card.title}
-            className="group cursor-default transition-all duration-200 hover:translate-y-[-2px] hover:shadow-card-hover"
+            className={`group cursor-default card-shine transition-all duration-200 hover:translate-y-[-2px] hover:shadow-elevated ${card.accent}`}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 {card.title}
               </CardTitle>
-              <div className={`rounded-lg ${card.bgColor} p-2 transition-transform duration-200 group-hover:scale-110`}>
-                <Icon className={`size-4 ${card.color}`} />
+              <div className={`rounded-xl bg-gradient-to-br ${card.gradient} p-2.5 transition-all duration-200 group-hover:scale-110 group-hover:shadow-md`}>
+                <Icon className={`size-5 ${card.iconColor}`} />
               </div>
             </CardHeader>
             <CardContent>

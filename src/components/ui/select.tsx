@@ -24,7 +24,7 @@ function Select({ value, onChange, placeholder = "Select...", items, disabled, c
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         disabled={disabled}
-        className="flex h-10 w-full appearance-none rounded-lg border border-input bg-muted/30 px-3 py-2 pr-8 text-sm shadow-sm transition-all duration-150 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-primary disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-10 w-full appearance-none rounded-xl border border-input bg-muted/30 px-3 py-2 pr-8 text-sm shadow-sm transition-all duration-200 placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30 focus-visible:border-primary/50 focus-visible:bg-muted/50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <option value="" disabled>
           {placeholder}

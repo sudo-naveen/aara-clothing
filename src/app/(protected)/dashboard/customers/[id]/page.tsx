@@ -28,11 +28,19 @@ export default async function CustomerProfilePage({ params }: Props) {
   ]);
 
   return (
-    <div className="space-y-6 p-8">
+    <div className="relative space-y-6 p-8">
+      <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-56 rounded-full bg-aara-accent/8 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -left-24 -z-10 size-40 rounded-full bg-aara-highlight/8 blur-3xl" />
+
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{customer.name}</h1>
-          <p className="text-sm text-muted-foreground">Customer Profile</p>
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-xl bg-aara-primary/10">
+            <ShoppingBag className="size-5 text-aara-primary" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">{customer.name}</h1>
+            <p className="text-sm text-muted-foreground">Customer Profile</p>
+          </div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href={`/dashboard/customers/${id}/edit`}>
@@ -82,34 +90,40 @@ export default async function CustomerProfilePage({ params }: Props) {
 
       {stats && (
         <div className="grid gap-4 sm:grid-cols-3">
-          <Card>
+          <Card className="group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Orders
               </CardTitle>
-              <ShoppingBag className="size-4 text-muted-foreground" />
+              <div className="flex size-9 items-center justify-center rounded-xl bg-aara-primary/10 transition-transform duration-200 group-hover:scale-110">
+                <ShoppingBag className="size-4 text-aara-primary" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalOrders}</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Items Purchased
               </CardTitle>
-              <Package className="size-4 text-muted-foreground" />
+              <div className="flex size-9 items-center justify-center rounded-xl bg-aara-secondary/10 transition-transform duration-200 group-hover:scale-110">
+                <Package className="size-4 text-aara-secondary" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{stats.totalItemsPurchased}</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="group">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Last Order
               </CardTitle>
-              <Calendar className="size-4 text-muted-foreground" />
+              <div className="flex size-9 items-center justify-center rounded-xl bg-aara-accent/10 transition-transform duration-200 group-hover:scale-110">
+                <Calendar className="size-4 text-aara-accent" />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -136,12 +150,12 @@ export default async function CustomerProfilePage({ params }: Props) {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left">
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Order #</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Status</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Items</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 font-medium text-muted-foreground">Actions</th>
+                <tr className="sticky top-0 border-b border-border/50 bg-muted/20 backdrop-blur-sm">
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Order #</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Items</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Date</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -152,7 +166,7 @@ export default async function CustomerProfilePage({ params }: Props) {
                     </td>
                   </tr>
                 ) : (
-                  ordersResult.data.map((order) => {
+                  ordersResult.data.map((order, index) => {
                     const statusVariant: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
                       PENDING: "warning",
                       PROCESSING: "default",
@@ -160,7 +174,7 @@ export default async function CustomerProfilePage({ params }: Props) {
                       CANCELLED: "destructive",
                     };
                     return (
-                      <tr key={order.id} className="border-b last:border-0 hover:bg-muted/50">
+                      <tr key={order.id} className={`border-b border-border/30 last:border-0 table-row-hover ${index % 2 === 1 ? "bg-muted/5" : ""}`}>
                         <td className="px-4 py-3">
                           <span className="font-mono text-xs">#{order.orderNumber}</span>
                         </td>
@@ -181,7 +195,7 @@ export default async function CustomerProfilePage({ params }: Props) {
                             >
                               View
                             </Link>
-                            {order.status === "PENDING" && (
+                            {(order.status as string) === "PENDING" && (
                               <Link
                                 href={`/dashboard/customers/${id}/orders/${order.id}/edit`}
                                 className="text-sm font-medium text-primary hover:underline"

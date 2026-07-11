@@ -14,8 +14,8 @@ export function SecuritySection({ onChangePasswordClick }: SecuritySectionProps)
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-            <Shield className="size-5 text-primary" />
+          <div className="flex size-9 items-center justify-center rounded-xl bg-destructive/10">
+            <Shield className="size-5 text-destructive" />
           </div>
           <div>
             <CardTitle>Security</CardTitle>

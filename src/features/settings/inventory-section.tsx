@@ -51,8 +51,8 @@ export function InventorySection() {
     <Card>
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
-            <Boxes className="size-5 text-primary" />
+          <div className="flex size-9 items-center justify-center rounded-xl bg-aara-accent/10">
+            <Boxes className="size-5 text-aara-accent" />
           </div>
           <div>
             <CardTitle>Inventory</CardTitle>
