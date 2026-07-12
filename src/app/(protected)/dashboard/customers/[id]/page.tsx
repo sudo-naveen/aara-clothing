@@ -2,11 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getCustomerById } from "@/features/customers/customers-service";
 import { getCustomerOrderStats, listOrders } from "@/features/orders/orders-service";
+import { CustomerOrdersSection } from "@/features/customers/customer-orders-section";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Pencil, Plus, Package, ShoppingBag, Calendar } from "lucide-react";
-import { ORDER_STATUS_LABELS } from "@/lib/constants";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -136,84 +135,28 @@ export default async function CustomerProfilePage({ params }: Props) {
         </div>
       )}
 
-      <Card>
-        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
-          <CardTitle>Order History</CardTitle>
-          <Link href={`/dashboard/customers/${id}/orders/new`}>
-            <Button size="sm">
-              <Plus className="size-4" />
-              New Order
-            </Button>
-          </Link>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="sticky top-0 border-b border-border/50 bg-muted/20 backdrop-blur-sm">
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Order #</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Items</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Date</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ordersResult.data.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="px-4 py-12 text-center text-muted-foreground">
-                      No orders yet
-                    </td>
-                  </tr>
-                ) : (
-                  ordersResult.data.map((order, index) => {
-                    const statusVariant: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
-                      PENDING: "warning",
-                      PROCESSING: "default",
-                      DELIVERED: "success",
-                      CANCELLED: "destructive",
-                    };
-                    return (
-                      <tr key={order.id} className={`border-b border-border/30 last:border-0 table-row-hover ${index % 2 === 1 ? "bg-muted/5" : ""}`}>
-                        <td className="px-4 py-3">
-                          <span className="font-mono text-xs">#{order.orderNumber}</span>
-                        </td>
-                        <td className="px-4 py-3">
-                          <Badge variant={statusVariant[order.status] ?? "secondary"}>
-                            {ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] ?? order.status}
-                          </Badge>
-                        </td>
-                        <td className="px-4 py-3">{order.items.length}</td>
-                        <td className="px-4 py-3">
-                          {new Date(order.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="flex gap-2">
-                            <Link
-                              href={`/dashboard/customers/${id}/orders/${order.id}`}
-                              className="text-sm font-medium text-primary hover:underline"
-                            >
-                              View
-                            </Link>
-                            {(order.status as string) === "PENDING" && (
-                              <Link
-                                href={`/dashboard/customers/${id}/orders/${order.id}/edit`}
-                                className="text-sm font-medium text-primary hover:underline"
-                              >
-                                Edit
-                              </Link>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+      <CustomerOrdersSection
+        customerId={id}
+        orders={ordersResult.data.map((order) => ({
+          id: order.id,
+          orderNumber: order.orderNumber,
+          status: order.status,
+          createdAt: order.createdAt,
+          items: order.items.map((item) => ({
+            id: item.id,
+            variant: {
+              product: {
+                id: item.variant.product.id,
+                name: item.variant.product.name,
+              },
+              color: item.variant.color,
+              size: item.variant.size,
+              sku: item.variant.sku,
+            },
+            quantity: item.quantity,
+          })),
+        }))}
+      />
     </div>
   );
 }

@@ -26,7 +26,17 @@ export async function listOrders(query: OrderQuery) {
       skip,
       take: limit,
       include: {
-        items: true,
+        items: {
+          include: {
+            variant: {
+              include: {
+                product: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
+          },
+        },
         customer: {
           select: { id: true, name: true },
         },
@@ -179,8 +189,8 @@ export async function updateOrder(id: string, input: UpdateOrderInput) {
     include: { items: true },
   });
   if (!existing) throw new Error("Order not found");
-  if (existing.status !== "PENDING") {
-    throw new Error("Only orders with 'Pending' status can be edited");
+  if (existing.status !== "NOT_STARTED") {
+    throw new Error("Only orders with 'Not Started' status can be edited");
   }
 
   const variantIds = input.items.map((i) => i.variantId);

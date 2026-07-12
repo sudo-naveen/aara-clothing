@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { NotificationBell } from "@/components/notification-bell";
 
 function getGreeting() {
@@ -12,6 +11,7 @@ function getFormattedDate() {
   const now = new Date();
   return now.toLocaleDateString("en-US", {
     weekday: "long",
+    day: "numeric",
     month: "long",
     year: "numeric",
   });
@@ -19,24 +19,23 @@ function getFormattedDate() {
 
 export function Header({ username }: { username: string }) {
   return (
-    <Card className="relative mb-6 overflow-hidden border-0 bg-gradient-to-br from-[var(--aara-secondary)] to-[var(--aara-accent)] p-6 text-white shadow-lg shadow-aara-secondary/20">
+    <div className="relative mb-8 overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-[var(--aara-secondary)] to-[var(--aara-accent)] p-8 shadow-lg shadow-aara-secondary/10">
       <div className="relative z-10 flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {getGreeting()}, {username}
+        <div className="space-y-1.5">
+          <h1 className="text-3xl font-semibold tracking-tight text-white">
+            {getGreeting()}, <span className="font-bold">{username}</span>
           </h1>
-          <p className="mt-1.5 text-sm text-white/70">
+          <p className="text-sm text-white/60">
             {getFormattedDate()}
           </p>
         </div>
         <NotificationBell />
       </div>
-      {/* Decorative elements */}
-      <div className="absolute -right-8 -top-8 size-32 rounded-full bg-white/10" />
-      <div className="absolute -bottom-6 -right-6 size-24 rounded-full bg-white/5" />
-      <div className="absolute -left-4 -bottom-4 size-16 rounded-full bg-white/5" />
-      {/* Subtle mesh overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/5" />
-    </Card>
+
+      <div className="absolute -right-16 -top-16 size-48 rounded-full bg-white/[0.06]" />
+      <div className="absolute -bottom-8 -right-8 size-32 rounded-full bg-white/[0.04]" />
+      <div className="absolute -left-8 -top-8 size-24 rounded-full bg-white/[0.03]" />
+      <div className="absolute bottom-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+    </div>
   );
 }

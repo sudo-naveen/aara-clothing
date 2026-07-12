@@ -81,7 +81,7 @@ model Order {
   orderNumber Int        @default(autoincrement())
   customerId String
   customer   Customer    @relation(fields: [customerId], references: [id])
-  status     OrderStatus @default(PENDING)
+  status     OrderStatus @default(NOT_STARTED)
   subtotal   Decimal     @db.Decimal(10, 2)
   discount   Decimal     @default(0) @db.Decimal(10, 2)
   total      Decimal     @db.Decimal(10, 2)
@@ -105,8 +105,7 @@ model OrderItem {
 }
 
 enum OrderStatus {
-  PENDING
+  NOT_STARTED
   PROCESSING
-  DELIVERED
-  CANCELLED
+  DONE
 }

@@ -42,9 +42,9 @@ export async function getDashboardStats() {
         },
       },
     }),
-    prisma.order.count({ where: { status: "PENDING" } }),
+    prisma.order.count({ where: { status: "NOT_STARTED" } }),
     prisma.order.count({ where: { status: "PROCESSING" } }),
-    prisma.order.count({ where: { status: "DELIVERED" } }),
+    prisma.order.count({ where: { status: "DONE" } }),
   ]);
 
   return {

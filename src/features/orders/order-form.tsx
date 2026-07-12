@@ -10,8 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save } from "lucide-react";
-import { ORDER_STATUS_LABELS, ORDER_STATUSES } from "@/lib/constants";
-import type { OrderStatus } from "@/lib/constants";
+import { ORDER_STATUS_LABELS, ORDER_STATUSES, type OrderStatus } from "@/lib/constants";
 
 interface VariantItem {
   id: string;
@@ -52,7 +51,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
   const [quantity, setQuantity] = useState(1);
   const [items, setItems] = useState<OrderItemRow[]>(initialItems ?? []);
   const [orderStatus, setOrderStatus] = useState<OrderStatus>(
-    (initialStatus as OrderStatus) ?? ORDER_STATUSES.PENDING
+    (initialStatus as OrderStatus) ?? ORDER_STATUSES.NOT_STARTED
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -343,7 +342,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Status</span>
-                  <Badge variant={orderStatus === ORDER_STATUSES.DELIVERED ? "success" : orderStatus === ORDER_STATUSES.PROCESSING ? "default" : orderStatus === ORDER_STATUSES.CANCELLED ? "destructive" : "warning"}>
+                  <Badge variant={orderStatus === ORDER_STATUSES.DONE ? "success" : orderStatus === ORDER_STATUSES.PROCESSING ? "default" : "secondary"}>
                     {ORDER_STATUS_LABELS[orderStatus]}
                   </Badge>
                 </div>

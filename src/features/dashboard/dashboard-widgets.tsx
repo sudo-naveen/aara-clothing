@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   ShoppingBag,
@@ -9,6 +10,7 @@ import {
   AlertTriangle,
   XCircle,
 } from "lucide-react";
+import { ROUTES } from "@/lib/constants";
 
 interface Stats {
   todayOrders: number;
@@ -22,6 +24,15 @@ interface Stats {
 interface Props {
   stats: Stats;
 }
+
+const cardLinks: Record<string, string> = {
+  "Today's Orders": ROUTES.DASHBOARD,
+  "Pending Orders": ROUTES.CUSTOMERS,
+  Processing: ROUTES.CUSTOMERS,
+  Delivered: ROUTES.CUSTOMERS,
+  "Low Stock": ROUTES.INVENTORY,
+  "Out of Stock": ROUTES.INVENTORY,
+};
 
 export function DashboardWidgets({ stats }: Props) {
   const cards = [
@@ -85,10 +96,13 @@ export function DashboardWidgets({ stats }: Props) {
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {cards.map((card) => {
         const Icon = card.icon;
-        return (
+        const href = cardLinks[card.title];
+
+        const cardContent = (
           <Card
-            key={card.title}
-            className={`group cursor-default card-shine transition-all duration-200 hover:translate-y-[-2px] hover:shadow-elevated ${card.accent}`}
+            className={`group card-shine transition-all duration-200 hover:translate-y-[-2px] hover:shadow-elevated ${card.accent} ${href ? "cursor-pointer" : "cursor-default"}`}
+            tabIndex={href ? 0 : undefined}
+            role={href ? "link" : undefined}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -103,6 +117,16 @@ export function DashboardWidgets({ stats }: Props) {
             </CardContent>
           </Card>
         );
+
+        if (href) {
+          return (
+            <Link key={card.title} href={href} className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-xl">
+              {cardContent}
+            </Link>
+          );
+        }
+
+        return <div key={card.title}>{cardContent}</div>;
       })}
     </div>
   );
