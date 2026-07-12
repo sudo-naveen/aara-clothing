@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AccentColorProvider } from "@/components/providers/accent-color-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -34,7 +35,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <AccentColorProvider>
+            {children}
+          </AccentColorProvider>
           <Toaster />
         </ThemeProvider>
       </body>

@@ -6,13 +6,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import {
   updateProfileSchema,
+  changePasswordSchema,
   type UpdateProfileInput,
+  type ChangePasswordInput,
 } from "./settings-validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { User, Loader2, Save } from "lucide-react";
+import { User, Loader2, Save, KeyRound } from "lucide-react";
 
 interface ProfileSectionProps {
   name: string | null;
@@ -21,10 +23,20 @@ interface ProfileSectionProps {
 
 export function ProfileSection({ name, username }: ProfileSectionProps) {
   const [isEditingName, setIsEditingName] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const nameForm = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: { name: name ?? "" },
+  });
+
+  const passwordForm = useForm<ChangePasswordInput>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
   });
 
   async function onNameSubmit(data: UpdateProfileInput) {
@@ -44,6 +56,30 @@ export function ProfileSection({ name, username }: ProfileSectionProps) {
       toast.success("Profile updated successfully");
       setIsEditingName(false);
       nameForm.reset({ name: data.name });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+    }
+  }
+
+  async function onPasswordSubmit(data: ChangePasswordInput) {
+    try {
+      const response = await fetch("/api/settings/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error ?? "Failed to change password");
+      }
+
+      toast.success("Password changed successfully");
+      setIsChangingPassword(false);
+      passwordForm.reset();
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -124,6 +160,86 @@ export function ProfileSection({ name, username }: ProfileSectionProps) {
                 </Button>
               </div>
             </div>
+          )}
+        </div>
+
+        <div className="border-t border-border/40 pt-6">
+          <h4 className="text-sm font-medium mb-4">Password</h4>
+          {isChangingPassword ? (
+            <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  {...passwordForm.register("currentPassword")}
+                  placeholder="Enter current password"
+                />
+                {passwordForm.formState.errors.currentPassword && (
+                  <p className="text-sm text-destructive">
+                    {passwordForm.formState.errors.currentPassword.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  {...passwordForm.register("newPassword")}
+                  placeholder="Enter new password"
+                />
+                {passwordForm.formState.errors.newPassword && (
+                  <p className="text-sm text-destructive">
+                    {passwordForm.formState.errors.newPassword.message}
+                  </p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  {...passwordForm.register("confirmPassword")}
+                  placeholder="Confirm new password"
+                />
+                {passwordForm.formState.errors.confirmPassword && (
+                  <p className="text-sm text-destructive">
+                    {passwordForm.formState.errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIsChangingPassword(false);
+                    passwordForm.reset();
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" size="sm" disabled={passwordForm.formState.isSubmitting}>
+                  {passwordForm.formState.isSubmitting ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <KeyRound className="size-4" />
+                  )}
+                  Change Password
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsChangingPassword(true)}
+            >
+              <KeyRound className="size-4" />
+              Change Password
+            </Button>
           )}
         </div>
       </CardContent>

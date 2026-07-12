@@ -33,6 +33,10 @@ export const {
           return null;
         }
 
+        if (!user.isActive) {
+          return null;
+        }
+
         const isPasswordValid = await bcrypt.compare(
           password,
           user.passwordHash
@@ -46,6 +50,7 @@ export const {
           id: user.id,
           name: user.name,
           username: user.username,
+          isAdmin: user.isAdmin,
         };
       },
     }),
@@ -57,6 +62,7 @@ export const {
         token.id = user.id;
         token.name = user.name;
         token.username = (user as { username: string }).username;
+        token.isAdmin = (user as { isAdmin: boolean }).isAdmin;
       }
       return token;
     },
@@ -65,6 +71,7 @@ export const {
         session.user.id = token.id as string;
         session.user.name = token.name as string | null;
         (session.user as { username: string }).username = token.username as string;
+        (session.user as { isAdmin: boolean }).isAdmin = token.isAdmin as boolean;
       }
       return session;
     },

@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 import { ROUTES } from "@/lib/constants";
 import { SignOutButton } from "@/features/auth/sign-out-button";
 import {
@@ -12,7 +14,6 @@ import {
   Settings,
   Menu,
   X,
-  Package2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,13 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { theme, resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleEscape(e: KeyboardEvent) {
@@ -85,15 +92,35 @@ export function Sidebar() {
         <div className="flex h-16 items-center justify-between border-b border-border/50 px-5">
           <Link
             href={ROUTES.DASHBOARD}
-            className="flex items-center gap-3"
+            className="flex items-center"
             onClick={handleNavClick}
           >
-            <div className="flex size-9 items-center justify-center rounded-xl gradient-accent shadow-md shadow-primary/20">
-              <Package2 className="size-5 text-white" />
-            </div>
-            <span className="text-lg font-bold tracking-tight text-sidebar-foreground">
-              Aara Clothing
-            </span>
+            {mounted && (
+              <>
+                <Image
+                  src="/aara-logo-black.png"
+                  alt="Aara Clothing"
+                  width={120}
+                  height={32}
+                  className={cn(
+                    "h-8 w-auto object-contain",
+                    resolvedTheme === "dark" ? "hidden" : "block"
+                  )}
+                  priority
+                />
+                <Image
+                  src="/aara-logo-white.png"
+                  alt="Aara Clothing"
+                  width={120}
+                  height={32}
+                  className={cn(
+                    "h-8 w-auto object-contain",
+                    resolvedTheme === "dark" ? "block" : "hidden"
+                  )}
+                  priority
+                />
+              </>
+            )}
           </Link>
           <button
             type="button"
