@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,6 +12,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { ROUTES } from "@/lib/constants";
+import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
 interface Stats {
   todayOrders: number;
@@ -22,7 +24,7 @@ interface Stats {
 }
 
 interface Props {
-  stats: Stats;
+  initialStats: Stats;
 }
 
 const cardLinks: Record<string, string> = {
@@ -34,7 +36,28 @@ const cardLinks: Record<string, string> = {
   "Out of Stock": ROUTES.INVENTORY,
 };
 
-export function DashboardWidgets({ stats }: Props) {
+export function DashboardWidgets({ initialStats }: Props) {
+  const { refreshKey } = useDashboardRefresh();
+  const [stats, setStats] = useState<Stats>(initialStats);
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const res = await fetch("/api/dashboard/stats");
+      const result = await res.json();
+      if (result.success) {
+        setStats(result.data);
+      }
+    } catch {
+      // silently fail, keep current stats
+    }
+  }, []);
+
+  useEffect(() => {
+    if (refreshKey > 0) {
+      fetchStats();
+    }
+  }, [refreshKey, fetchStats]);
+
   const cards = [
     {
       title: "Today's Orders",

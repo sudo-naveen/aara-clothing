@@ -7,17 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, ArrowLeft } from "lucide-react";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW } from "@/lib/constants";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW, ORDER_STATUS_VARIANT } from "@/lib/constants";
 
 interface Props {
   params: Promise<{ id: string; orderId: string }>;
 }
-
-const statusVariant: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
-  NOT_STARTED: "secondary",
-  PROCESSING: "default",
-  DONE: "success",
-};
 
 export default async function OrderDetailPage({ params }: Props) {
   const { id: customerId, orderId } = await params;
@@ -53,7 +47,7 @@ export default async function OrderDetailPage({ params }: Props) {
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge variant={statusVariant[order.status] ?? "secondary"} className="text-sm px-3 py-1">
+          <Badge variant={ORDER_STATUS_VARIANT[order.status as keyof typeof ORDER_STATUS_VARIANT] ?? "secondary"} className="text-sm px-3 py-1">
             {ORDER_STATUS_LABELS[order.status as keyof typeof ORDER_STATUS_LABELS] ?? order.status}
           </Badge>
           {(order.status as string) === "NOT_STARTED" && (

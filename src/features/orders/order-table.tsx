@@ -5,7 +5,7 @@ import { DataTable } from "@/components/data-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, Pencil } from "lucide-react";
-import { ORDER_STATUS_LABELS, ORDER_STATUSES } from "@/lib/constants";
+import { ORDER_STATUS_LABELS, ORDER_STATUSES, ORDER_STATUS_VARIANT } from "@/lib/constants";
 import type { Column } from "@/components/data-table";
 
 interface OrderRow {
@@ -21,12 +21,6 @@ interface Props {
   customerId: string;
 }
 
-const statusVariantMap: Record<string, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
-  NOT_STARTED: "secondary",
-  PROCESSING: "default",
-  DONE: "success",
-};
-
 export function OrderTable({ data, customerId }: Props) {
   const columns: Column<OrderRow>[] = [
     {
@@ -40,7 +34,7 @@ export function OrderTable({ data, customerId }: Props) {
       key: "status",
       header: "Status",
       cell: (item) => (
-        <Badge variant={statusVariantMap[item.status] ?? "secondary"}>
+        <Badge variant={ORDER_STATUS_VARIANT[item.status as keyof typeof ORDER_STATUS_VARIANT] ?? "secondary"}>
           {ORDER_STATUS_LABELS[item.status as keyof typeof ORDER_STATUS_LABELS] ?? item.status}
         </Badge>
       ),

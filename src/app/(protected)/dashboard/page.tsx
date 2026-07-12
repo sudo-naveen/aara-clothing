@@ -1,5 +1,6 @@
 import { getDashboardStats } from "@/features/dashboard/dashboard-service";
 import { DashboardWidgets } from "@/features/dashboard/dashboard-widgets";
+import { RecentOrders } from "@/features/dashboard/recent-orders";
 import { Header } from "@/components/header";
 import { auth } from "@/auth";
 
@@ -22,7 +23,17 @@ export default async function DashboardPage() {
 
       <div className="relative">
         <Header username={username} />
-        <DashboardWidgets stats={stats} />
+        <div className="mt-6 space-y-6">
+          <DashboardWidgets initialStats={{
+            todayOrders: stats.todayOrders,
+            pendingOrders: stats.pendingOrders,
+            processingOrders: stats.processingOrders,
+            deliveredOrders: stats.deliveredOrders,
+            lowStockProducts: stats.lowStockProducts,
+            outOfStockProducts: stats.outOfStockProducts,
+          }} />
+          <RecentOrders />
+        </div>
       </div>
     </div>
   );

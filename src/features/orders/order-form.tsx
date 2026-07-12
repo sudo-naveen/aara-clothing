@@ -11,7 +11,8 @@ import { Select } from "@/components/ui/select";
 import { SearchableSelect } from "@/components/ui/searchable-select";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, Save, Package } from "lucide-react";
-import { ORDER_STATUS_LABELS, ORDER_STATUSES, type OrderStatus } from "@/lib/constants";
+import { ORDER_STATUS_LABELS, ORDER_STATUSES, ORDER_STATUS_VARIANT, type OrderStatus } from "@/lib/constants";
+import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
 interface VariantItem {
   id: string;
@@ -46,6 +47,7 @@ interface OrderFormProps {
 
 export function OrderForm({ customerId, orderId, initialItems, initialStatus, mode }: OrderFormProps) {
   const router = useRouter();
+  const { requestRefresh } = useDashboardRefresh();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState("");
@@ -201,6 +203,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
         });
         const statusResult = await statusRes.json();
         if (!statusResult.success) throw new Error(statusResult.error);
+        requestRefresh();
       }
 
       toast.success(
@@ -367,7 +370,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Status</span>
-                  <Badge variant={orderStatus === ORDER_STATUSES.DONE ? "success" : orderStatus === ORDER_STATUSES.PROCESSING ? "default" : "secondary"}>
+                  <Badge variant={ORDER_STATUS_VARIANT[orderStatus]}>
                     {ORDER_STATUS_LABELS[orderStatus]}
                   </Badge>
                 </div>

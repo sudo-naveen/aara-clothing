@@ -32,6 +32,12 @@ export const ORDER_STATUS_FLOW: Record<OrderStatus, OrderStatus[]> = {
   DONE: [],
 };
 
+export const ORDER_STATUS_VARIANT: Record<OrderStatus, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {
+  NOT_STARTED: "secondary",
+  PROCESSING: "default",
+  DONE: "success",
+};
+
 export const STOCK_THRESHOLDS = {
   LOW: 10,
   OUT: 0,

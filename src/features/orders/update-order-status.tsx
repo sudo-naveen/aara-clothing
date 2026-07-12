@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW, type OrderStatus } from "@/lib/constants";
+import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
 interface Props {
   orderId: string;
@@ -14,6 +15,7 @@ interface Props {
 
 export function UpdateOrderStatus({ orderId, currentStatus, newStatus }: Props) {
   const router = useRouter();
+  const { requestRefresh } = useDashboardRefresh();
   const [isLoading, setIsLoading] = useState(false);
 
   const allowedTransitions = ORDER_STATUS_FLOW[currentStatus as OrderStatus] ?? [];
@@ -36,6 +38,7 @@ export function UpdateOrderStatus({ orderId, currentStatus, newStatus }: Props) 
       toast.success(
         `Order status updated to ${ORDER_STATUS_LABELS[newStatus as keyof typeof ORDER_STATUS_LABELS]}`
       );
+      requestRefresh();
       router.refresh();
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
