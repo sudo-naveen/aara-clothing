@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -40,6 +40,7 @@ export function UserManagementSection() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingUser, setIsAddingUser] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [, startTransition] = useTransition();
 
   const createUserForm = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
@@ -75,8 +76,10 @@ export function UserManagementSection() {
   }, []);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    startTransition(() => {
+      fetchUsers();
+    });
+  }, [fetchUsers, startTransition]);
 
   async function onCreateUser(data: CreateUserInput) {
     try {

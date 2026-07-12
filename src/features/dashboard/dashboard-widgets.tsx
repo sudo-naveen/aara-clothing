@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useTransition } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -39,6 +39,7 @@ const cardLinks: Record<string, string> = {
 export function DashboardWidgets({ initialStats }: Props) {
   const { refreshKey } = useDashboardRefresh();
   const [stats, setStats] = useState<Stats>(initialStats);
+  const [, startTransition] = useTransition();
 
   const fetchStats = useCallback(async () => {
     try {
@@ -54,9 +55,11 @@ export function DashboardWidgets({ initialStats }: Props) {
 
   useEffect(() => {
     if (refreshKey > 0) {
-      fetchStats();
+      startTransition(() => {
+        fetchStats();
+      });
     }
-  }, [refreshKey, fetchStats]);
+  }, [refreshKey, fetchStats, startTransition]);
 
   const cards = [
     {

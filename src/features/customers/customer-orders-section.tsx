@@ -88,7 +88,7 @@ function StatusSelector({
 
   if (allowedTransitions.length === 0) {
     return (
-      <Badge variant={statusVariant[optimisticStatus] ?? "secondary"}>
+      <Badge variant={statusVariant[optimisticStatus as OrderStatus] ?? "secondary"}>
         {ORDER_STATUS_LABELS[optimisticStatus as keyof typeof ORDER_STATUS_LABELS] ?? optimisticStatus}
       </Badge>
     );

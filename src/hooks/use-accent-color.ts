@@ -46,7 +46,6 @@ export function useAccentColor() {
 
   useEffect(() => {
     const color = getColorFromStorage();
-    setAccentColorState(color);
 
     const isDark = document.documentElement.classList.contains("dark");
     applyAccentColor(color, isDark);

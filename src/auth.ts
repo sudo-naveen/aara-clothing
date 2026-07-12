@@ -71,7 +71,7 @@ export const {
         session.user.id = token.id as string;
         session.user.name = token.name as string | null;
         (session.user as { username: string }).username = token.username as string;
-        (session.user as { isAdmin: boolean }).isAdmin = token.isAdmin as boolean;
+        (session.user as unknown as { isAdmin: boolean }).isAdmin = token.isAdmin as boolean;
       }
       return session;
     },

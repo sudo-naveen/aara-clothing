@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useTransition } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ export function RecentOrders() {
   const { refreshKey } = useDashboardRefresh();
   const [orders, setOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [, startTransition] = useTransition();
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -38,14 +39,18 @@ export function RecentOrders() {
   }, []);
 
   useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
+    startTransition(() => {
+      fetchOrders();
+    });
+  }, [fetchOrders, startTransition]);
 
   useEffect(() => {
     if (refreshKey > 0) {
-      fetchOrders();
+      startTransition(() => {
+        fetchOrders();
+      });
     }
-  }, [refreshKey, fetchOrders]);
+  }, [refreshKey, fetchOrders, startTransition]);
 
   return (
     <Card>
