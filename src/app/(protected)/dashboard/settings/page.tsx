@@ -1,10 +1,19 @@
-export default function SettingsPage() {
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { ROUTES } from "@/lib/constants";
+import { SettingsContent } from "@/features/settings/settings-content";
+
+export default async function SettingsPage() {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect(ROUTES.LOGIN);
+  }
+
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold tracking-tight">Settings</h2>
-        <p className="text-sm text-muted-foreground">Manage your application preferences</p>
-      </div>
-    </div>
+    <SettingsContent
+      name={session.user.name}
+      username={session.user.username}
+    />
   );
 }

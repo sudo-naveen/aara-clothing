@@ -53,6 +53,49 @@
 }
 
 :root {
+  --background: oklch(0.98 0.005 170);
+  --foreground: oklch(0.15 0.02 170);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 170);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.02 170);
+  --primary: oklch(0.45 0.10 165);
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.55 0.10 165);
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.95 0.005 170);
+  --muted-foreground: oklch(0.45 0.02 170);
+  --accent: oklch(0.55 0.10 165);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.60 0.22 25);
+  --border: oklch(0.88 0.005 170);
+  --input: oklch(0.88 0.005 170);
+  --ring: oklch(0.45 0.10 165);
+  --chart-1: oklch(0.55 0.10 165);
+  --chart-2: oklch(0.45 0.10 165);
+  --chart-3: oklch(0.65 0.10 165);
+  --chart-4: oklch(0.50 0.08 165);
+  --chart-5: oklch(0.40 0.08 165);
+  --radius: 0.75rem;
+
+  /* Aara brand colors */
+  --aara-primary: #273338;
+  --aara-secondary: #2B5748;
+  --aara-accent: #618764;
+  --aara-highlight: #9CB080;
+
+  /* Sidebar */
+  --sidebar: oklch(0.97 0.005 170);
+  --sidebar-foreground: oklch(0.15 0.02 170);
+  --sidebar-primary: oklch(0.45 0.10 165);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.92 0.005 170);
+  --sidebar-accent-foreground: oklch(0.15 0.02 170);
+  --sidebar-border: oklch(0.88 0.005 170);
+  --sidebar-ring: oklch(0.45 0.10 165);
+}
+
+.dark {
   --background: oklch(0.08 0.02 170);
   --foreground: oklch(0.95 0.01 170);
   --card: oklch(0.12 0.02 170);
@@ -76,13 +119,6 @@
   --chart-3: oklch(0.45 0.10 165);
   --chart-4: oklch(0.65 0.08 165);
   --chart-5: oklch(0.35 0.08 165);
-  --radius: 0.75rem;
-
-  /* Aara brand colors */
-  --aara-primary: #273338;
-  --aara-secondary: #2B5748;
-  --aara-accent: #618764;
-  --aara-highlight: #9CB080;
 
   /* Sidebar */
   --sidebar: oklch(0.06 0.02 170);
@@ -145,21 +181,21 @@
     background: linear-gradient(135deg, oklch(0.45 0.10 165) 0%, oklch(0.55 0.10 165) 100%);
   }
   .gradient-subtle {
-    background: linear-gradient(180deg, oklch(0.12 0.02 170) 0%, oklch(0.08 0.02 170) 100%);
+    background: linear-gradient(180deg, var(--card) 0%, var(--background) 100%);
   }
 
   /* Glassmorphism */
   .glass {
-    background: oklch(0.12 0.02 170 / 0.6);
+    background: color-mix(in oklch, var(--card) 60%, transparent);
     backdrop-filter: blur(16px) saturate(1.5);
     -webkit-backdrop-filter: blur(16px) saturate(1.5);
-    border: 1px solid oklch(1 0 0 / 0.08);
+    border: 1px solid color-mix(in oklch, var(--border) 30%, transparent);
   }
   .glass-strong {
-    background: oklch(0.12 0.02 170 / 0.75);
+    background: color-mix(in oklch, var(--card) 75%, transparent);
     backdrop-filter: blur(24px) saturate(1.8);
     -webkit-backdrop-filter: blur(24px) saturate(1.8);
-    border: 1px solid oklch(1 0 0 / 0.12);
+    border: 1px solid color-mix(in oklch, var(--border) 40%, transparent);
   }
 
   /* Decorative blobs */
@@ -183,7 +219,7 @@
     transition: background-color 150ms ease;
   }
   .table-row-hover:hover {
-    background-color: oklch(0.15 0.02 170 / 0.5);
+    background-color: color-mix(in oklch, var(--muted) 50%, transparent);
   }
 
   /* Card shine effect */
