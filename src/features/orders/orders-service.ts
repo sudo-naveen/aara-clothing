@@ -317,6 +317,16 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   }
 
   return prisma.$transaction(async (tx) => {
+    // When reverting to NOT_STARTED, restore stock (undo the original deduction)
+    if (status === "NOT_STARTED" && currentStatus !== "NOT_STARTED") {
+      for (const item of existing.items) {
+        await tx.productVariant.update({
+          where: { id: item.variantId },
+          data: { stock: { increment: item.quantity } },
+        });
+      }
+    }
+
     return tx.order.update({
       where: { id },
       data: { status },

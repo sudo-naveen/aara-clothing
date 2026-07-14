@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -11,9 +12,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VariantForm } from "@/features/variants/variant-form";
+import { VariantEditDialog } from "@/features/variants/variant-edit-dialog";
 import { ImageUpload } from "@/features/images/image-upload";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Pencil } from "lucide-react";
 import type { Product, ProductVariant } from "@/types";
+import { cn } from "@/lib/utils";
 
 interface ProductFormProps {
   mode: "create" | "edit";
@@ -23,6 +26,7 @@ interface ProductFormProps {
 export function ProductForm({ mode, initialData }: ProductFormProps) {
   const router = useRouter();
   const isEdit = mode === "edit";
+  const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
 
   const schema = isEdit ? updateProductSchema : createProductSchema;
 
@@ -169,23 +173,35 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
                       key={variant.id}
                       className="rounded-lg border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/30"
                     >
-                      <div className="mb-3 grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-                        <div>
-                          <span className="text-muted-foreground">Color:</span>{" "}
-                          <span className="font-medium">{variant.color}</span>
+                      <div className="mb-3 flex items-start justify-between gap-2">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-4 flex-1">
+                          <div>
+                            <span className="text-muted-foreground">Color:</span>{" "}
+                            <span className="font-medium">{variant.color}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Size:</span>{" "}
+                            <span className="font-medium">{variant.size}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">SKU:</span>{" "}
+                            <span className="font-medium font-mono text-xs">{variant.sku}</span>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Stock:</span>{" "}
+                            <span className={cn("font-medium", variant.stock === 0 ? "text-destructive" : variant.stock <= 5 ? "text-amber-500" : "")}>{variant.stock}</span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-muted-foreground">Size:</span>{" "}
-                          <span className="font-medium">{variant.size}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">SKU:</span>{" "}
-                          <span className="font-medium font-mono text-xs">{variant.sku}</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Stock:</span>{" "}
-                          <span className="font-medium">{variant.stock}</span>
-                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="xs"
+                          onClick={() => setEditingVariant(variant)}
+                          className="shrink-0"
+                        >
+                          <Pencil className="size-3" />
+                          Edit
+                        </Button>
                       </div>
 
                       <ImageUpload
@@ -196,6 +212,15 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
                     </div>
                   ))}
                 </div>
+              )}
+
+              {editingVariant && (
+                <VariantEditDialog
+                  variant={editingVariant}
+                  open={!!editingVariant}
+                  onOpenChange={(open) => { if (!open) setEditingVariant(null); }}
+                  onUpdated={() => { setEditingVariant(null); router.refresh(); }}
+                />
               )}
             </CardContent>
           </Card>
