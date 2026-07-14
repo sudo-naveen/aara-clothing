@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useSyncExternalStore } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "next-themes";
 import { ROUTES } from "@/lib/constants";
 import { SignOutButton } from "@/features/auth/sign-out-button";
 import {
@@ -26,13 +25,7 @@ const navItems = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { resolvedTheme } = useTheme();
   const [open, setOpen] = useState(false);
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
 
   useEffect(() => {
     function handleEscape(e: KeyboardEvent) {
@@ -96,32 +89,22 @@ export function Sidebar() {
             className="flex items-center"
             onClick={handleNavClick}
           >
-            {mounted && (
-              <>
-                <Image
-                  src="/aara-logo-black.png"
-                  alt="Aara Clothing"
-                  width={120}
-                  height={32}
-                  className={cn(
-                    "h-8 w-auto object-contain",
-                    resolvedTheme === "dark" ? "hidden" : "block"
-                  )}
-                  priority
-                />
-                <Image
-                  src="/aara-logo-white.png"
-                  alt="Aara Clothing"
-                  width={120}
-                  height={32}
-                  className={cn(
-                    "h-8 w-auto object-contain",
-                    resolvedTheme === "dark" ? "block" : "hidden"
-                  )}
-                  priority
-                />
-              </>
-            )}
+            <Image
+              src="/aara-logo-black.png"
+              alt="Aara Clothing"
+              width={120}
+              height={32}
+              className="h-8 w-auto object-contain dark:hidden"
+              priority
+            />
+            <Image
+              src="/aara-logo-white.png"
+              alt="Aara Clothing"
+              width={120}
+              height={32}
+              className="h-8 w-auto object-contain hidden dark:block"
+              priority
+            />
           </Link>
           <button
             type="button"

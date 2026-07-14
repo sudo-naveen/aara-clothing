@@ -14,7 +14,7 @@ interface RecentOrder {
   orderNumber: number;
   status: string;
   createdAt: string;
-  customer: { name: string };
+  customer: { id: string; name: string };
   items: { quantity: number }[];
 }
 
@@ -90,7 +90,14 @@ export function RecentOrders() {
                   <div className="min-w-0 flex-1 space-y-0.5">
                     <p className="truncate text-sm font-medium">
                       #{order.orderNumber}
-                      <span className="ml-2 text-muted-foreground">— {order.customer.name}</span>
+                      <span className="ml-2 text-muted-foreground">— </span>
+                      <Link
+                        href={`/dashboard/customers/${order.customer.id}`}
+                        className="text-muted-foreground hover:text-foreground transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {order.customer.name}
+                      </Link>
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {totalItems} items · {new Date(order.createdAt).toLocaleDateString()}

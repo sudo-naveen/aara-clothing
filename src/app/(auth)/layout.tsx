@@ -37,10 +37,15 @@ export default function AuthLayout({
       <div className="relative z-10 w-full max-w-sm px-6">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center gap-4">
-          <div className="flex size-16 items-center justify-center rounded-2xl glass-strong shadow-elevated">
-            <span className="text-2xl font-bold tracking-tight text-white">
-              A
-            </span>
+          <div className="flex size-16 items-center justify-center rounded-2xl glass-strong shadow-elevated p-3">
+            <Image
+              src="/aara-logo-white.png"
+              alt="Aara Clothing"
+              width={120}
+              height={32}
+              className="h-8 w-auto object-contain"
+              priority
+            />
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-white">

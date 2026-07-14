@@ -6,10 +6,9 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ChevronDown, ChevronRight, Pencil, Loader2, Package } from "lucide-react";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW, ORDER_STATUS_VARIANT, type OrderStatus } from "@/lib/constants";
+import { ORDER_STATUSES, ORDER_STATUS_LABELS, ORDER_STATUS_VARIANT, type OrderStatus } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
@@ -55,8 +54,6 @@ function StatusSelector({
   const [isPending, startTransition] = useTransition();
   const [optimisticStatus, setOptimisticStatus] = useState(currentStatus);
 
-  const allowedTransitions = ORDER_STATUS_FLOW[optimisticStatus as OrderStatus] ?? [];
-
   const handleChange = useCallback(
     async (newStatus: string) => {
       const previousStatus = optimisticStatus;
@@ -86,31 +83,39 @@ function StatusSelector({
     [orderId, router, optimisticStatus, onStatusChange]
   );
 
-  if (allowedTransitions.length === 0) {
-    return (
-      <Badge variant={statusVariant[optimisticStatus as OrderStatus] ?? "secondary"}>
-        {ORDER_STATUS_LABELS[optimisticStatus as keyof typeof ORDER_STATUS_LABELS] ?? optimisticStatus}
-      </Badge>
-    );
-  }
+  const variant = statusVariant[optimisticStatus as OrderStatus] ?? "secondary";
+  const variantStyles: Record<string, string> = {
+    default: "bg-primary/10 text-primary border-primary/20",
+    secondary: "bg-muted/50 text-muted-foreground border-muted-foreground/20",
+    success: "bg-success/10 text-success border-success/20",
+    destructive: "bg-destructive/10 text-destructive border-destructive/20",
+    warning: "bg-warning/10 text-warning border-warning/20",
+    outline: "border border-border",
+  };
 
   return (
     <div className="flex items-center gap-2">
-      <Select
-        value={optimisticStatus}
-        onChange={handleChange}
-        disabled={isPending}
-        items={[
-          {
-            value: optimisticStatus,
-            label: ORDER_STATUS_LABELS[optimisticStatus as keyof typeof ORDER_STATUS_LABELS] ?? optimisticStatus,
-          },
-          ...allowedTransitions.map((s) => ({
-            value: s,
-            label: ORDER_STATUS_LABELS[s as keyof typeof ORDER_STATUS_LABELS] ?? s,
-          })),
-        ]}
-      />
+      <div className="relative">
+        <select
+          value={optimisticStatus}
+          onChange={(e) => handleChange(e.target.value)}
+          disabled={isPending}
+          className={cn(
+            "appearance-none rounded-full px-3 py-1 pr-8 text-xs font-medium transition-all duration-200",
+            "border cursor-pointer",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            variantStyles[variant] ?? variantStyles.secondary
+          )}
+        >
+          {Object.values(ORDER_STATUSES).map((s) => (
+            <option key={s} value={s}>
+              {ORDER_STATUS_LABELS[s]}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-2 top-1/2 size-3 -translate-y-1/2 opacity-60" />
+      </div>
       {isPending && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
     </div>
   );
@@ -204,10 +209,12 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                 const isExpanded = expandedOrder === order.id;
                 return (
                   <div key={order.id}>
-                    <button
-                      type="button"
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={() => toggleExpand(order.id)}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-left"
+                      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpand(order.id); }}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-left cursor-pointer"
                     >
                       <div className="flex size-6 shrink-0 items-center justify-center">
                         {isExpanded ? (
@@ -253,7 +260,7 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                           </Link>
                         )}
                       </div>
-                    </button>
+                    </div>
 
                     {isExpanded && order.items.length > 0 && (
                       <div className="border-t border-border/20 bg-muted/10 px-4 py-3 space-y-2">
@@ -296,10 +303,12 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                       <tr key={order.id} className={cn("border-b border-border/30 last:border-0 table-row-hover", index % 2 === 1 && "bg-muted/5")}>
                         <td colSpan={6} className="p-0">
                           <div>
-                            <button
-                              type="button"
+                            <div
+                              role="button"
+                              tabIndex={0}
                               onClick={() => toggleExpand(order.id)}
-                              className="flex w-full items-center px-2 py-3 text-left"
+                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpand(order.id); }}
+                              className="flex w-full items-center px-2 py-3 text-left cursor-pointer"
                             >
                               <div className="flex w-6 shrink-0 items-center justify-center">
                                 {isExpanded ? (
@@ -339,7 +348,7 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                   </Link>
                                 )}
                               </div>
-                            </button>
+                            </div>
 
                             {isExpanded && order.items.length > 0 && (
                               <div className="border-t border-border/20 bg-muted/10">
