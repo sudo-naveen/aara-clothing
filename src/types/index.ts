@@ -46,16 +46,8 @@ export interface ProductVariant {
   color: string;
   size: string;
   stock: number;
-  images: VariantImage[];
   createdAt: Date;
   updatedAt: Date;
-}
-
-export interface VariantImage {
-  id: string;
-  variantId: string;
-  url: string;
-  createdAt: Date;
 }
 
 export interface Customer {

@@ -1,20 +1,11 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { listProducts } from "@/features/inventory/inventory-service";
+import { listProducts, getVariantsInUse } from "@/features/inventory/inventory-service";
 import { productQuerySchema } from "@/features/inventory/inventory-validation";
 import { ProductTable } from "@/features/inventory/product-table";
 import { Button } from "@/components/ui/button";
 import { FloatingActionButton } from "@/components/fab";
 import { Boxes, Plus } from "lucide-react";
-import type { Product } from "@/types";
-
-interface ProductRow {
-  id: string;
-  name: string;
-  variantCount: number;
-  isActive: boolean;
-  createdAt: Date;
-}
 
 interface Props {
   searchParams: Promise<{ page?: string; search?: string }>;
@@ -28,12 +19,15 @@ export default async function InventoryPage({ searchParams }: Props) {
     search,
   });
 
-  const result = await listProducts(query);
+  const [result, variantsInUse] = await Promise.all([
+    listProducts(query),
+    getVariantsInUse(),
+  ]);
 
-  const rows: ProductRow[] = result.data.map((p) => ({
+  const rows = result.data.map((p) => ({
     id: p.id,
     name: p.name,
-    variantCount: (p as Product & { _count?: { variants: number } })._count?.variants ?? 0,
+    variants: (p as typeof p & { variants?: { id: string; color: string; size: string; stock: number }[] }).variants ?? [],
     isActive: p.isActive,
     createdAt: p.createdAt,
   }));
@@ -67,6 +61,7 @@ export default async function InventoryPage({ searchParams }: Props) {
       <Suspense fallback={<div>Loading...</div>}>
         <ProductTable
           data={rows}
+          variantsInUse={variantsInUse}
           page={result.page}
           totalPages={result.totalPages}
           search={query.search ?? ""}

@@ -23,7 +23,7 @@ export default function AuthLayout({
           quality={85}
         />
         {/* Dark overlay for readability */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/75" />
         {/* Gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-br from-aara-primary/40 via-transparent to-aara-secondary/30" />
       </div>
@@ -34,13 +34,18 @@ export default function AuthLayout({
       <div className="absolute left-[60%] top-[10%] size-32 rounded-full bg-aara-highlight/8 blur-2xl" style={{ animation: "pulse-soft 4s ease-in-out infinite" }} />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-sm px-6">
+      <div className="relative z-10 w-full max-w-sm px-6 py-8 sm:py-0">
         {/* Branding */}
         <div className="mb-8 flex flex-col items-center gap-4">
-          <div className="flex size-16 items-center justify-center rounded-2xl glass-strong shadow-elevated">
-            <span className="text-2xl font-bold tracking-tight text-white">
-              A
-            </span>
+          <div className="flex size-16 items-center justify-center rounded-2xl glass-strong shadow-elevated p-3">
+            <Image
+              src="/aara-logo-white.png"
+              alt="Aara Clothing"
+              width={120}
+              height={32}
+              className="h-8 w-auto object-contain"
+              priority
+            />
           </div>
           <div className="text-center">
             <h1 className="text-2xl font-bold tracking-tight text-white">

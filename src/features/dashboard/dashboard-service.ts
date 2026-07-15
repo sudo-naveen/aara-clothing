@@ -66,7 +66,7 @@ export async function getRecentOrders(limit = 5) {
     take: limit,
     orderBy: { createdAt: "desc" },
     include: {
-      customer: { select: { name: true } },
+      customer: { select: { id: true, name: true } },
       items: { select: { quantity: true } },
     },
   });

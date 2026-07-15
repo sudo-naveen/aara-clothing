@@ -1,8 +1,10 @@
 import { getDashboardStats } from "@/features/dashboard/dashboard-service";
 import { DashboardWidgets } from "@/features/dashboard/dashboard-widgets";
+import { AnalyticsChart } from "@/features/dashboard/analytics-chart";
 import { RecentOrders } from "@/features/dashboard/recent-orders";
 import { Header } from "@/components/header";
 import { auth } from "@/auth";
+import { ChevronRight, LayoutDashboard } from "lucide-react";
 
 export default async function DashboardPage() {
   const [stats, session] = await Promise.all([
@@ -13,7 +15,7 @@ export default async function DashboardPage() {
   const username = session?.user?.name ?? session?.user?.username ?? "there";
 
   return (
-    <div className="relative p-4 sm:p-8">
+    <div className="relative min-h-screen p-4 sm:p-6 lg:p-8">
       {/* Background decorative elements */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -right-32 -top-32 size-96 rounded-full blob-primary blur-3xl" />
@@ -22,17 +24,40 @@ export default async function DashboardPage() {
       </div>
 
       <div className="relative">
+        {/* Breadcrumb */}
+        <nav className="mb-4 flex items-center gap-1.5 text-xs sm:text-sm">
+          <LayoutDashboard className="size-3.5 text-muted-foreground/60" />
+          <span className="text-muted-foreground/60">Dashboard</span>
+          <ChevronRight className="size-3 text-muted-foreground/30" />
+          <span className="font-medium text-foreground/80">Overview</span>
+        </nav>
+
         <Header username={username} />
-        <div className="mt-6 space-y-6">
-          <DashboardWidgets initialStats={{
-            todayOrders: stats.todayOrders,
-            pendingOrders: stats.pendingOrders,
-            processingOrders: stats.processingOrders,
-            deliveredOrders: stats.deliveredOrders,
-            lowStockProducts: stats.lowStockProducts,
-            outOfStockProducts: stats.outOfStockProducts,
-          }} />
-          <RecentOrders />
+
+        <div className="space-y-6 sm:space-y-8">
+          <DashboardWidgets
+            initialStats={{
+              todayOrders: stats.todayOrders,
+              pendingOrders: stats.pendingOrders,
+              processingOrders: stats.processingOrders,
+              deliveredOrders: stats.deliveredOrders,
+              lowStockProducts: stats.lowStockProducts,
+              outOfStockProducts: stats.outOfStockProducts,
+            }}
+          />
+          <div className="grid gap-6 lg:grid-cols-2">
+            <AnalyticsChart
+              initialStats={{
+                todayOrders: stats.todayOrders,
+                pendingOrders: stats.pendingOrders,
+                processingOrders: stats.processingOrders,
+                deliveredOrders: stats.deliveredOrders,
+                lowStockProducts: stats.lowStockProducts,
+                outOfStockProducts: stats.outOfStockProducts,
+              }}
+            />
+            <RecentOrders />
+          </div>
         </div>
       </div>
     </div>

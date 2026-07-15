@@ -308,6 +308,16 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   }
 
   return prisma.$transaction(async (tx) => {
+    // When reverting to NOT_STARTED, restore stock (undo the original deduction)
+    if (status === "NOT_STARTED" && existing.status !== "NOT_STARTED") {
+      for (const item of existing.items) {
+        await tx.productVariant.update({
+          where: { id: item.variantId },
+          data: { stock: { increment: item.quantity } },
+        });
+      }
+    }
+
     return tx.order.update({
       where: { id },
       data: { status },
@@ -328,6 +338,26 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
         },
       },
     });
+  });
+}
+
+export async function deleteOrder(id: string) {
+  const existing = await prisma.order.findUnique({
+    where: { id },
+    include: { items: true },
+  });
+  if (!existing) throw new Error("Order not found");
+
+  return prisma.$transaction(async (tx) => {
+    for (const item of existing.items) {
+      await tx.productVariant.update({
+        where: { id: item.variantId },
+        data: { stock: { increment: item.quantity } },
+      });
+    }
+
+    await tx.orderItem.deleteMany({ where: { orderId: id } });
+    await tx.order.delete({ where: { id } });
   });
 }
 
