@@ -26,7 +26,6 @@ export function VariantForm({ productId, onVariantCreated }: VariantFormProps) {
       productId,
       color: "",
       size: "",
-      sku: "",
       stock: 0,
     },
   });
@@ -45,7 +44,7 @@ export function VariantForm({ productId, onVariantCreated }: VariantFormProps) {
         throw new Error(result.error ?? "Failed to create variant");
       }
 
-      reset({ productId, color: "", size: "", sku: "", stock: 0 });
+      reset({ productId, color: "", size: "", stock: 0 });
       onVariantCreated?.();
     } catch (error) {
       if (error instanceof Error) {
@@ -69,13 +68,6 @@ export function VariantForm({ productId, onVariantCreated }: VariantFormProps) {
           <Input id="size" placeholder="e.g. M" {...register("size")} />
           {errors.size && (
             <p className="text-sm text-destructive">{errors.size.message}</p>
-          )}
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="sku">SKU</Label>
-          <Input id="sku" placeholder="e.g. TSH-BLK-M" {...register("sku")} />
-          {errors.sku && (
-            <p className="text-sm text-destructive">{errors.sku.message}</p>
           )}
         </div>
         <div className="space-y-2">

@@ -22,7 +22,6 @@ interface Variant {
   product: { id: string; name: string };
   color: string;
   size: string;
-  sku: string;
   stock: number;
 }
 
@@ -96,7 +95,7 @@ export function StockUpdateDialog({
           <div className="rounded-lg bg-muted/30 border border-border p-4 text-sm">
             <div className="font-medium text-foreground">{variant.product.name}</div>
             <div className="text-muted-foreground">
-              {variant.color} / {variant.size} / <span className="font-mono text-xs">{variant.sku}</span>
+              {variant.color} / {variant.size}
             </div>
             <div className="mt-2 text-muted-foreground">
               Current stock: <span className="font-semibold text-foreground">{variant.stock}</span>

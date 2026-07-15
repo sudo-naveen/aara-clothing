@@ -179,10 +179,6 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
                           <span className="font-medium">{variant.size}</span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">SKU:</span>{" "}
-                          <span className="font-medium font-mono text-xs">{variant.sku}</span>
-                        </div>
-                        <div>
                           <span className="text-muted-foreground">Stock:</span>{" "}
                           <span className="font-medium">{variant.stock}</span>
                         </div>

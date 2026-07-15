@@ -1,4 +1,4 @@
-import { CustomerForm } from "@/features/customers/customer-form";
+import { NewCustomerContent } from "@/features/customers/new-customer-content";
 
 export default function NewCustomerPage() {
   return (
@@ -9,7 +9,7 @@ export default function NewCustomerPage() {
         </h1>
         <p className="mt-1 text-xs text-muted-foreground sm:text-sm">Add a new customer to the database</p>
       </div>
-      <CustomerForm mode="create" />
+      <NewCustomerContent />
     </div>
   );
 }

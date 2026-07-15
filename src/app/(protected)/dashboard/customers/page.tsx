@@ -57,7 +57,7 @@ export default async function CustomersPage({
       <FloatingActionButton
         icon={<Plus className="size-6" />}
         label="Add Customer"
-        onClick={() => window.location.href = "/dashboard/customers/new"}
+        href="/dashboard/customers/new"
       />
     </div>
   );

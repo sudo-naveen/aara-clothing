@@ -20,7 +20,6 @@ interface InventoryRow {
   product: { id: string; name: string };
   color: string;
   size: string;
-  sku: string;
   stock: number;
   createdAt: Date;
 }
@@ -59,13 +58,6 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
       header: "Product",
       cell: (item) => (
         <span className="font-medium">{item.product.name}</span>
-      ),
-    },
-    {
-      key: "sku",
-      header: "SKU",
-      cell: (item) => (
-        <span className="font-mono text-xs text-muted-foreground">{item.sku}</span>
       ),
     },
     {
@@ -148,9 +140,6 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span className="text-xs text-muted-foreground">
                     {item.color} / {item.size}
-                  </span>
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    {item.sku}
                   </span>
                 </div>
                 <div className="mt-1.5">

@@ -31,7 +31,7 @@ export default async function EditOrderPage({ params }: Props) {
   const items = order.items.map((item) => ({
     variantId: item.variantId,
     productName: item.variant.product.name,
-    variantLabel: `${item.variant.color} / ${item.variant.size} (${item.variant.sku})`,
+    variantLabel: `${item.variant.color} / ${item.variant.size}`,
     quantity: item.quantity,
     stock: item.variant.stock + item.quantity,
   }));

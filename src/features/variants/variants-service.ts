@@ -36,7 +36,6 @@ export async function createVariant(input: CreateVariantInput) {
         productId: input.productId,
         color: input.color,
         size: input.size,
-        sku: input.sku,
         stock: input.stock ?? 0,
       },
       include: {
@@ -44,13 +43,6 @@ export async function createVariant(input: CreateVariantInput) {
       },
     });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes("Unique constraint") &&
-      error.message.includes("sku")
-    ) {
-      throw new Error("SKU already exists");
-    }
     throw error;
   }
 }
@@ -62,7 +54,6 @@ export async function updateVariant(id: string, input: UpdateVariantInput) {
   const data: Record<string, unknown> = {};
   if (input.color !== undefined) data.color = input.color;
   if (input.size !== undefined) data.size = input.size;
-  if (input.sku !== undefined) data.sku = input.sku;
   if (input.stock !== undefined) data.stock = input.stock;
 
   try {
@@ -74,13 +65,6 @@ export async function updateVariant(id: string, input: UpdateVariantInput) {
       },
     });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes("Unique constraint") &&
-      error.message.includes("sku")
-    ) {
-      throw new Error("SKU already exists");
-    }
     throw error;
   }
 }

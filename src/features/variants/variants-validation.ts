@@ -10,10 +10,6 @@ export const createVariantSchema = z.object({
     .string()
     .min(1, "Size is required")
     .max(50, "Size must be 50 characters or less"),
-  sku: z
-    .string()
-    .min(1, "SKU is required")
-    .max(50, "SKU must be 50 characters or less"),
   stock: z.number().int().min(0, "Stock cannot be negative"),
 });
 
@@ -27,11 +23,6 @@ export const updateVariantSchema = z.object({
     .string()
     .min(1, "Size is required")
     .max(50, "Size must be 50 characters or less")
-    .optional(),
-  sku: z
-    .string()
-    .min(1, "SKU is required")
-    .max(50, "SKU must be 50 characters or less")
     .optional(),
   stock: z.number().int().min(0, "Stock cannot be negative").optional(),
 });

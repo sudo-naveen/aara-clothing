@@ -303,17 +303,8 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
   });
   if (!existing) throw new Error("Order not found");
 
-  const allowedTransitions = ORDER_STATUS_FLOW[existing.status];
-  const currentStatus = existing.status as OrderStatus;
-
-  if (status === currentStatus) {
+  if (status === (existing.status as OrderStatus)) {
     return getOrderById(id);
-  }
-
-  if (!allowedTransitions.includes(status)) {
-    throw new Error(
-      `Cannot transition from ${currentStatus} to ${status}`
-    );
   }
 
   return prisma.$transaction(async (tx) => {

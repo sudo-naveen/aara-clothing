@@ -45,7 +45,6 @@ export interface ProductVariant {
   productId: string;
   color: string;
   size: string;
-  sku: string;
   stock: number;
   images: VariantImage[];
   createdAt: Date;

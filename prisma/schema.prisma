@@ -51,7 +51,6 @@ model ProductVariant {
   product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
   color     String
   size      String
-  sku       String        @unique
   stock     Int           @default(0)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt

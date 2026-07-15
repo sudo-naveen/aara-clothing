@@ -75,7 +75,7 @@ export default async function InventoryPage({ searchParams }: Props) {
       <FloatingActionButton
         icon={<Plus className="size-6" />}
         label="Add Product"
-        onClick={() => window.location.href = "/dashboard/inventory/new"}
+        href="/dashboard/inventory/new"
       />
     </div>
   );

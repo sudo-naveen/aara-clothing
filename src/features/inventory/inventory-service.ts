@@ -120,7 +120,6 @@ export async function listInventory(query: InventoryQuery) {
 
   if (search) {
     where.OR = [
-      { sku: { contains: search, mode: "insensitive" } },
       { color: { contains: search, mode: "insensitive" } },
       { size: { contains: search, mode: "insensitive" } },
       { product: { name: { contains: search, mode: "insensitive" } } },

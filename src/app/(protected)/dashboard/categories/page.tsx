@@ -65,7 +65,7 @@ export default async function CategoriesPage({ searchParams }: Props) {
       <FloatingActionButton
         icon={<Plus className="size-6" />}
         label="Add Category"
-        onClick={() => window.location.href = "/dashboard/categories/new"}
+        href="/dashboard/categories/new"
       />
     </div>
   );

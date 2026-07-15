@@ -27,9 +27,9 @@ export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
 };
 
 export const ORDER_STATUS_FLOW: Record<OrderStatus, OrderStatus[]> = {
-  NOT_STARTED: ["PROCESSING"],
-  PROCESSING: ["DONE"],
-  DONE: [],
+  NOT_STARTED: ["PROCESSING", "DONE"],
+  PROCESSING: ["NOT_STARTED", "DONE"],
+  DONE: ["NOT_STARTED", "PROCESSING"],
 };
 
 export const ORDER_STATUS_VARIANT: Record<OrderStatus, "default" | "secondary" | "success" | "destructive" | "warning" | "outline"> = {

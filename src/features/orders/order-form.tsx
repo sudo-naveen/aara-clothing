@@ -18,7 +18,6 @@ interface VariantItem {
   id: string;
   color: string;
   size: string;
-  sku: string;
   stock: number;
 }
 
@@ -43,11 +42,14 @@ interface OrderFormProps {
   initialItems?: OrderItemRow[];
   initialStatus?: string;
   mode: "create" | "edit";
+  onSuccess?: () => void;
+  onCancel?: () => void;
 }
 
-export function OrderForm({ customerId, orderId, initialItems, initialStatus, mode }: OrderFormProps) {
+export function OrderForm({ customerId, orderId, initialItems, initialStatus, mode, onSuccess, onCancel }: OrderFormProps) {
   const router = useRouter();
   const { requestRefresh } = useDashboardRefresh();
+  const isEmbedded = !!onSuccess;
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState("");
@@ -81,7 +83,6 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
               id: v.id,
               color: v.color,
               size: v.size,
-              sku: v.sku,
               stock: v.stock,
             });
           }
@@ -137,7 +138,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
       {
         variantId: selectedVariantId,
         productName: selectedProduct?.name ?? "",
-        variantLabel: `${variant.color} / ${variant.size} (${variant.sku})`,
+        variantLabel: `${variant.color} / ${variant.size}`,
         quantity,
         stock: variant.stock,
       },
@@ -209,7 +210,11 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
       toast.success(
         mode === "create" ? "Order created successfully" : "Order updated successfully"
       );
-      router.push(`/dashboard/customers/${customerId}`);
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.push(`/dashboard/customers/${customerId}`);
+      }
     } catch (error) {
       if (error instanceof Error) toast.error(error.message);
     } finally {
@@ -221,7 +226,29 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
     return <div className="p-6 text-muted-foreground">Loading products...</div>;
   }
 
+  const handleCancel = () => {
+    if (onCancel) {
+      onCancel();
+    } else {
+      router.back();
+    }
+  };
+
   if (products.length === 0) {
+    const emptyState = (
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="flex size-12 items-center justify-center rounded-xl bg-muted/50 mb-4">
+          <Package className="size-6 text-muted-foreground" />
+        </div>
+        <p className="text-sm font-medium text-foreground">No inventory available</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Add products to inventory before creating an order.
+        </p>
+      </div>
+    );
+
+    if (isEmbedded) return emptyState;
+
     return (
       <div className="space-y-6">
         <Card>
@@ -229,19 +256,218 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
             <CardTitle>{mode === "create" ? "Create New Order" : "Edit Order"}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-muted/50 mb-4">
-                <Package className="size-6 text-muted-foreground" />
-              </div>
-              <p className="text-sm font-medium text-foreground">No inventory available</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Add products to inventory before creating an order.
-              </p>
-            </div>
+            {emptyState}
           </CardContent>
         </Card>
       </div>
     );
+  }
+
+  const formContent = (
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="space-y-2">
+          <Label>Product</Label>
+          <SearchableSelect
+            value={selectedProductId}
+            onChange={(val) => {
+              setSelectedProductId(val);
+              setSelectedVariantId("");
+              setQuantity(1);
+            }}
+            placeholder="Search products..."
+            emptyMessage="No products available"
+            items={products.map((p) => ({
+              value: p.id,
+              label: p.name,
+            }))}
+          />
+        </div>
+
+        {selectedProductId && (
+          <div className="space-y-2">
+            <Label>Variant</Label>
+            <Select
+              value={selectedVariantId}
+              onChange={(val) => {
+                setSelectedVariantId(val);
+                setQuantity(1);
+              }}
+              placeholder="Select variant"
+              items={variants.map((v) => ({
+                value: v.id,
+                label: `${v.color} / ${v.size} (Stock: ${v.stock})`,
+              }))}
+            />
+          </div>
+        )}
+
+        {selectedVariantId && (
+          <div className="space-y-2">
+            <Label>Quantity</Label>
+            <div className="flex gap-2">
+              <Input
+                type="number"
+                min={1}
+                max={variants.find((v) => v.id === selectedVariantId)?.stock ?? 999}
+                value={quantity}
+                onChange={(e) => setQuantity(Number(e.target.value))}
+                className="min-w-0 flex-1"
+              />
+              <Button
+                type="button"
+                size="sm"
+                onClick={handleAddItem}
+              >
+                <Plus className="size-4" />
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {items.length > 0 && (
+        <div className="mt-6 space-y-2">
+          <Label>Order Items</Label>
+          {/* Mobile: Card view */}
+          <div className="md:hidden space-y-2">
+            {items.map((item) => (
+              <div key={item.variantId} className="rounded-lg border border-border bg-muted/20 p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm truncate">{item.productName}</p>
+                    <p className="text-xs text-muted-foreground truncate">{item.variantLabel}</p>
+                    <p className="text-xs text-muted-foreground">Stock: {item.stock}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => handleRemoveItem(item.variantId)}
+                    className="shrink-0"
+                  >
+                    <Trash2 className="size-4 text-destructive" />
+                  </Button>
+                </div>
+                <div className="mt-2 flex items-center gap-2">
+                  <Label className="text-xs text-muted-foreground">Qty:</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={item.stock}
+                    value={item.quantity}
+                    onChange={(e) =>
+                      handleQuantityChange(item.variantId, Number(e.target.value))
+                    }
+                    className="h-11 w-20 text-center"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Desktop: Table view */}
+          <div className="hidden md:block overflow-x-auto rounded-md border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-left">
+                  <th className="px-4 py-2 font-medium text-muted-foreground">Product</th>
+                  <th className="px-4 py-2 font-medium text-muted-foreground">Variant</th>
+                  <th className="px-4 py-2 font-medium text-muted-foreground text-center">Qty</th>
+                  <th className="px-4 py-2 font-medium text-muted-foreground text-center">Stock</th>
+                  <th className="px-4 py-2" />
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.variantId} className="border-b last:border-0">
+                    <td className="px-4 py-2">{item.productName}</td>
+                    <td className="px-4 py-2">{item.variantLabel}</td>
+                    <td className="px-4 py-2 text-center">
+                      <Input
+                        type="number"
+                        min={1}
+                        max={item.stock}
+                        value={item.quantity}
+                        onChange={(e) =>
+                          handleQuantityChange(item.variantId, Number(e.target.value))
+                        }
+                        className="h-11 w-20 text-center"
+                      />
+                    </td>
+                    <td className="px-4 py-2 text-center">{item.stock}</td>
+                    <td className="px-4 py-2">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={() => handleRemoveItem(item.variantId)}
+                      >
+                        <Trash2 className="size-4 text-destructive" />
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {items.length > 0 && (
+        <div className="mt-4 rounded-md border p-4 space-y-2">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Total Items</span>
+            <span className="font-medium">{totalItems}</span>
+          </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Status</span>
+            <Badge variant={ORDER_STATUS_VARIANT[orderStatus]}>
+              {ORDER_STATUS_LABELS[orderStatus]}
+            </Badge>
+          </div>
+        </div>
+      )}
+
+      {mode === "edit" && (
+        <div className="space-y-2">
+          <Label>Order Status</Label>
+          <Select
+            value={orderStatus}
+            onChange={(val) => setOrderStatus(val as OrderStatus)}
+            items={Object.values(ORDER_STATUSES).map((s) => ({
+              value: s,
+              label: ORDER_STATUS_LABELS[s],
+            }))}
+          />
+        </div>
+      )}
+
+      <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:flex-wrap">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCancel}
+          className="w-full sm:w-auto"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="button"
+          onClick={handleSubmit}
+          disabled={isSubmitting || items.length === 0}
+          className="w-full sm:w-auto"
+        >
+          <Save className="size-4" />
+          {isSubmitting
+            ? "Saving..."
+            : mode === "create"
+            ? "Create Order"
+            : "Update Order"}
+        </Button>
+      </div>
+    </div>
+  );
+
+  if (isEmbedded) {
+    return formContent;
   }
 
   return (
@@ -251,206 +477,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
           <CardTitle>{mode === "create" ? "Create New Order" : "Edit Order"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="space-y-2">
-                <Label>Product</Label>
-                <SearchableSelect
-                  value={selectedProductId}
-                  onChange={(val) => {
-                    setSelectedProductId(val);
-                    setSelectedVariantId("");
-                    setQuantity(1);
-                  }}
-                  placeholder="Search products..."
-                  emptyMessage="No products available"
-                  items={products.map((p) => ({
-                    value: p.id,
-                    label: p.name,
-                  }))}
-                />
-              </div>
-
-              {selectedProductId && (
-                <div className="space-y-2">
-                  <Label>Variant</Label>
-                  <Select
-                    value={selectedVariantId}
-                    onChange={(val) => {
-                      setSelectedVariantId(val);
-                      setQuantity(1);
-                    }}
-                    placeholder="Select variant"
-                    items={variants.map((v) => ({
-                      value: v.id,
-                      label: `${v.color} / ${v.size} (Stock: ${v.stock})`,
-                    }))}
-                  />
-                </div>
-              )}
-
-              {selectedVariantId && (
-                <div className="space-y-2">
-                  <Label>Quantity</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      min={1}
-                      max={variants.find((v) => v.id === selectedVariantId)?.stock ?? 999}
-                      value={quantity}
-                      onChange={(e) => setQuantity(Number(e.target.value))}
-                      className="min-w-0 flex-1"
-                    />
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={handleAddItem}
-                    >
-                      <Plus className="size-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {items.length > 0 && (
-              <div className="mt-6 space-y-2">
-                <Label>Order Items</Label>
-                {/* Mobile: Card view */}
-                <div className="md:hidden space-y-2">
-                  {items.map((item) => (
-                    <div key={item.variantId} className="rounded-lg border border-border bg-muted/20 p-3">
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p className="font-medium text-sm truncate">{item.productName}</p>
-                          <p className="text-xs text-muted-foreground truncate">{item.variantLabel}</p>
-                          <p className="text-xs text-muted-foreground">Stock: {item.stock}</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => handleRemoveItem(item.variantId)}
-                          className="shrink-0"
-                        >
-                          <Trash2 className="size-4 text-destructive" />
-                        </Button>
-                      </div>
-                      <div className="mt-2 flex items-center gap-2">
-                        <Label className="text-xs text-muted-foreground">Qty:</Label>
-                        <Input
-                          type="number"
-                          min={1}
-                          max={item.stock}
-                          value={item.quantity}
-                          onChange={(e) =>
-                            handleQuantityChange(item.variantId, Number(e.target.value))
-                          }
-                          className="h-11 w-20 text-center"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {/* Desktop: Table view */}
-                <div className="hidden md:block overflow-x-auto rounded-md border">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b text-left">
-                        <th className="px-4 py-2 font-medium text-muted-foreground">Product</th>
-                        <th className="px-4 py-2 font-medium text-muted-foreground">Variant</th>
-                        <th className="px-4 py-2 font-medium text-muted-foreground text-center">Qty</th>
-                        <th className="px-4 py-2 font-medium text-muted-foreground text-center">Stock</th>
-                        <th className="px-4 py-2" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {items.map((item) => (
-                        <tr key={item.variantId} className="border-b last:border-0">
-                          <td className="px-4 py-2">{item.productName}</td>
-                          <td className="px-4 py-2">{item.variantLabel}</td>
-                          <td className="px-4 py-2 text-center">
-                            <Input
-                              type="number"
-                              min={1}
-                              max={item.stock}
-                              value={item.quantity}
-                              onChange={(e) =>
-                                handleQuantityChange(item.variantId, Number(e.target.value))
-                              }
-                              className="h-11 w-20 text-center"
-                            />
-                          </td>
-                          <td className="px-4 py-2 text-center">{item.stock}</td>
-                          <td className="px-4 py-2">
-                            <Button
-                              variant="ghost"
-                              size="icon-sm"
-                              onClick={() => handleRemoveItem(item.variantId)}
-                            >
-                              <Trash2 className="size-4 text-destructive" />
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {items.length > 0 && (
-              <div className="mt-4 rounded-md border p-4 space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Total Items</span>
-                  <span className="font-medium">{totalItems}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge variant={ORDER_STATUS_VARIANT[orderStatus]}>
-                    {ORDER_STATUS_LABELS[orderStatus]}
-                  </Badge>
-                </div>
-              </div>
-            )}
-
-            {mode === "edit" && (
-              <div className="space-y-2">
-                <Label>Order Status</Label>
-                <Select
-                  value={orderStatus}
-                  onChange={(val) => setOrderStatus(val as OrderStatus)}
-                  items={Object.values(ORDER_STATUSES).map((s) => ({
-                    value: s,
-                    label: ORDER_STATUS_LABELS[s],
-                  }))}
-                />
-              </div>
-            )}
-
-            <div className="flex flex-col gap-3 pt-4 sm:flex-row sm:flex-wrap">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                className="w-full sm:w-auto"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                disabled={isSubmitting || items.length === 0}
-                className="w-full sm:w-auto"
-              >
-                <Save className="size-4" />
-                {isSubmitting
-                  ? "Saving..."
-                  : mode === "create"
-                  ? "Create Order"
-                  : "Update Order"}
-              </Button>
-            </div>
-          </div>
+          {formContent}
         </CardContent>
       </Card>
     </div>

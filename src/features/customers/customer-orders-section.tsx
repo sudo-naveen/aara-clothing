@@ -4,12 +4,11 @@ import { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ChevronDown, ChevronRight, Pencil, Loader2, Package } from "lucide-react";
-import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW, ORDER_STATUS_VARIANT, type OrderStatus } from "@/lib/constants";
+import { ORDER_STATUS_LABELS, ORDER_STATUSES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
@@ -19,7 +18,6 @@ interface OrderItem {
     product: { id: string; name: string };
     color: string;
     size: string;
-    sku: string;
   };
   quantity: number;
 }
@@ -37,9 +35,8 @@ interface Props {
   customerId: string;
   orders: OrderRow[];
   onStatusChange?: () => void;
+  onNewOrder?: () => void;
 }
-
-const statusVariant = ORDER_STATUS_VARIANT;
 
 function StatusSelector({
   orderId,
@@ -54,8 +51,6 @@ function StatusSelector({
   const { requestRefresh } = useDashboardRefresh();
   const [isPending, startTransition] = useTransition();
   const [optimisticStatus, setOptimisticStatus] = useState(currentStatus);
-
-  const allowedTransitions = ORDER_STATUS_FLOW[optimisticStatus as OrderStatus] ?? [];
 
   const handleChange = useCallback(
     async (newStatus: string) => {
@@ -86,37 +81,23 @@ function StatusSelector({
     [orderId, router, optimisticStatus, onStatusChange]
   );
 
-  if (allowedTransitions.length === 0) {
-    return (
-      <Badge variant={statusVariant[optimisticStatus as OrderStatus] ?? "secondary"}>
-        {ORDER_STATUS_LABELS[optimisticStatus as keyof typeof ORDER_STATUS_LABELS] ?? optimisticStatus}
-      </Badge>
-    );
-  }
-
   return (
     <div className="flex items-center gap-2">
       <Select
         value={optimisticStatus}
         onChange={handleChange}
         disabled={isPending}
-        items={[
-          {
-            value: optimisticStatus,
-            label: ORDER_STATUS_LABELS[optimisticStatus as keyof typeof ORDER_STATUS_LABELS] ?? optimisticStatus,
-          },
-          ...allowedTransitions.map((s) => ({
-            value: s,
-            label: ORDER_STATUS_LABELS[s as keyof typeof ORDER_STATUS_LABELS] ?? s,
-          })),
-        ]}
+        items={Object.values(ORDER_STATUSES).map((s) => ({
+          value: s,
+          label: ORDER_STATUS_LABELS[s],
+        }))}
       />
       {isPending && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
     </div>
   );
 }
 
-export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Props) {
+export function CustomerOrdersSection({ customerId, orders, onStatusChange, onNewOrder }: Props) {
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>("all");
 
@@ -140,12 +121,19 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
       <Card>
         <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
           <CardTitle>Order History</CardTitle>
-          <Link href={`/dashboard/customers/${customerId}/orders/new`} className="self-start">
-            <Button size="sm">
+          {onNewOrder ? (
+            <Button size="sm" onClick={onNewOrder} className="self-start">
               <Plus className="size-4" />
               New Order
             </Button>
-          </Link>
+          ) : (
+            <Link href={`/dashboard/customers/${customerId}/orders/new`} className="self-start">
+              <Button size="sm">
+                <Plus className="size-4" />
+                New Order
+              </Button>
+            </Link>
+          )}
         </CardHeader>
         <CardContent>
           <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -166,12 +154,19 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
     <Card>
       <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-2">
         <CardTitle>Order History</CardTitle>
-        <Link href={`/dashboard/customers/${customerId}/orders/new`} className="self-start">
-          <Button size="sm">
+        {onNewOrder ? (
+          <Button size="sm" onClick={onNewOrder} className="self-start">
             <Plus className="size-4" />
             New Order
           </Button>
-        </Link>
+        ) : (
+          <Link href={`/dashboard/customers/${customerId}/orders/new`} className="self-start">
+            <Button size="sm">
+              <Plus className="size-4" />
+              New Order
+            </Button>
+          </Link>
+        )}
       </CardHeader>
       <CardContent className="p-0">
         {/* Status Filter Tabs */}
@@ -247,9 +242,9 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                             href={`/dashboard/customers/${customerId}/orders/${order.id}/edit`}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <Button variant="ghost" size="icon-sm">
+                            <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                               <Pencil className="size-4" />
-                            </Button>
+                            </span>
                           </Link>
                         )}
                       </div>
@@ -264,7 +259,6 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                               <p className="text-xs text-muted-foreground">
                                 {item.variant.color} / {item.variant.size}
                               </p>
-                              <p className="font-mono text-[10px] text-muted-foreground">{item.variant.sku}</p>
                             </div>
                             <span className="shrink-0 font-medium">x{item.quantity}</span>
                           </div>
@@ -333,9 +327,9 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                     href={`/dashboard/customers/${customerId}/orders/${order.id}/edit`}
                                     onClick={(e) => e.stopPropagation()}
                                   >
-                                    <Button variant="ghost" size="icon-sm">
+                                    <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
                                       <Pencil className="size-4" />
-                                    </Button>
+                                    </span>
                                   </Link>
                                 )}
                               </div>
@@ -349,7 +343,6 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                       <th className="w-10 px-2" />
                                       <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
                                       <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Variant</th>
-                                      <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">SKU</th>
                                       <th className="px-4 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Qty</th>
                                       <th className="w-[100px] px-2" />
                                     </tr>
@@ -363,9 +356,6 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                           {item.variant.color} / {item.variant.size}
-                                        </td>
-                                        <td className="px-4 py-2">
-                                          <span className="font-mono text-xs text-muted-foreground">{item.variant.sku}</span>
                                         </td>
                                         <td className="px-4 py-2 text-right font-medium">{item.quantity}</td>
                                         <td className="w-[100px] px-2" />
