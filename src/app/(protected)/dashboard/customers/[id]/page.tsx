@@ -151,7 +151,6 @@ export default async function CustomerProfilePage({ params }: Props) {
               },
               color: item.variant.color,
               size: item.variant.size,
-              sku: item.variant.sku,
             },
             quantity: item.quantity,
           })),

@@ -75,7 +75,6 @@ export default async function OrderDetailPage({ params }: Props) {
                 <p className="text-xs text-muted-foreground">
                   {item.variant.color} / {item.variant.size}
                 </p>
-                <p className="font-mono text-[10px] text-muted-foreground">{item.variant.sku}</p>
                 <p className="mt-1 text-sm font-medium">Qty: {item.quantity}</p>
               </div>
             ))}
@@ -87,7 +86,6 @@ export default async function OrderDetailPage({ params }: Props) {
                 <tr className="sticky top-0 border-b border-border/50 bg-muted/20 backdrop-blur-sm">
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Variant</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">SKU</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Qty</th>
                 </tr>
               </thead>
@@ -99,9 +97,6 @@ export default async function OrderDetailPage({ params }: Props) {
                     </td>
                     <td className="px-4 py-3">
                       {item.variant.color} / {item.variant.size}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="font-mono text-xs">{item.variant.sku}</span>
                     </td>
                     <td className="px-4 py-3">{item.quantity}</td>
                   </tr>

@@ -7,6 +7,35 @@ import type {
   UpdateStockInput,
 } from "./inventory-validation";
 
+export async function getVariantsInUse(): Promise<Map<string, { inUse: number; ordered: number }>> {
+  const [processingRows, notStartedRows] = await Promise.all([
+    prisma.orderItem.groupBy({
+      by: ["variantId"],
+      where: { order: { status: "PROCESSING" } },
+      _sum: { quantity: true },
+    }),
+    prisma.orderItem.groupBy({
+      by: ["variantId"],
+      where: { order: { status: "NOT_STARTED" } },
+      _sum: { quantity: true },
+    }),
+  ]);
+
+  const map = new Map<string, { inUse: number; ordered: number }>();
+  for (const row of processingRows) {
+    map.set(row.variantId, { inUse: row._sum.quantity ?? 0, ordered: 0 });
+  }
+  for (const row of notStartedRows) {
+    const existing = map.get(row.variantId);
+    if (existing) {
+      existing.ordered = row._sum.quantity ?? 0;
+    } else {
+      map.set(row.variantId, { inUse: 0, ordered: row._sum.quantity ?? 0 });
+    }
+  }
+  return map;
+}
+
 export async function listProducts(query: ProductQuery) {
   const { page, limit, search } = query;
   const skip = (page - 1) * limit;
@@ -24,7 +53,10 @@ export async function listProducts(query: ProductQuery) {
       take: limit,
       include: {
         category: { select: { id: true, name: true } },
-        _count: { select: { variants: true } },
+        variants: {
+          select: { id: true, color: true, size: true, stock: true },
+          orderBy: { createdAt: "asc" },
+        },
       },
       orderBy: { createdAt: "desc" },
     }),
@@ -51,11 +83,6 @@ export async function getProductById(id: string) {
     include: {
       category: { select: { id: true, name: true } },
       variants: {
-        include: {
-          images: {
-            orderBy: { createdAt: "asc" },
-          },
-        },
         orderBy: { createdAt: "asc" },
       },
     },
@@ -120,7 +147,6 @@ export async function listInventory(query: InventoryQuery) {
 
   if (search) {
     where.OR = [
-      { sku: { contains: search, mode: "insensitive" } },
       { color: { contains: search, mode: "insensitive" } },
       { size: { contains: search, mode: "insensitive" } },
       { product: { name: { contains: search, mode: "insensitive" } } },

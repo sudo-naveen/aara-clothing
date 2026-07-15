@@ -20,7 +20,6 @@ interface Variant {
   id: string;
   color: string;
   size: string;
-  sku: string;
   stock: number;
   productId: string;
 }
@@ -47,7 +46,6 @@ export function VariantEditDialog({
     defaultValues: {
       color: variant.color,
       size: variant.size,
-      sku: variant.sku,
       stock: variant.stock,
     },
   });
@@ -113,14 +111,7 @@ export function VariantEditDialog({
                 <p className="text-sm text-destructive">{errors.size.message}</p>
               )}
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="sku">SKU</Label>
-              <Input id="sku" {...register("sku")} />
-              {errors.sku && (
-                <p className="text-sm text-destructive">{errors.sku.message}</p>
-              )}
-            </div>
-            <div className="space-y-2">
+            <div className="col-span-2 space-y-2">
               <Label htmlFor="stock">Stock</Label>
               <Input id="stock" type="number" min="0" {...register("stock", { valueAsNumber: true })} />
               {errors.stock && (

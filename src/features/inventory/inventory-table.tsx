@@ -20,7 +20,6 @@ interface InventoryRow {
   product: { id: string; name: string };
   color: string;
   size: string;
-  sku: string;
   stock: number;
   createdAt: Date;
 }
@@ -59,13 +58,6 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
       header: "Product",
       cell: (item) => (
         <span className="font-medium">{item.product.name}</span>
-      ),
-    },
-    {
-      key: "sku",
-      header: "SKU",
-      cell: (item) => (
-        <span className="font-mono text-xs text-muted-foreground">{item.sku}</span>
       ),
     },
     {
@@ -108,7 +100,7 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
             url.searchParams.delete("page");
             router.push(url.pathname + url.search);
           }}
-          placeholder="Search by product, SKU, color, or size..."
+          placeholder="Search by product, color, or size..."
         />
         <Card className="flex flex-col items-center justify-center rounded-2xl border-border/50 py-12">
           <div className="mb-3 flex size-12 items-center justify-center rounded-2xl bg-muted/50">
@@ -133,7 +125,7 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
           url.searchParams.delete("page");
           router.push(url.pathname + url.search);
         }}
-        placeholder="Search by product, SKU, color, or size..."
+        placeholder="Search by product, color, or size..."
       />
 
       {/* Mobile card view */}
@@ -148,9 +140,6 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span className="text-xs text-muted-foreground">
                     {item.color} / {item.size}
-                  </span>
-                  <span className="font-mono text-[10px] text-muted-foreground">
-                    {item.sku}
                   </span>
                 </div>
                 <div className="mt-1.5">

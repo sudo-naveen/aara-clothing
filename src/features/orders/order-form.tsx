@@ -18,7 +18,6 @@ interface VariantItem {
   id: string;
   color: string;
   size: string;
-  sku: string;
   stock: number;
 }
 
@@ -81,7 +80,6 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
               id: v.id,
               color: v.color,
               size: v.size,
-              sku: v.sku,
               stock: v.stock,
             });
           }
@@ -137,7 +135,7 @@ export function OrderForm({ customerId, orderId, initialItems, initialStatus, mo
       {
         variantId: selectedVariantId,
         productName: selectedProduct?.name ?? "",
-        variantLabel: `${variant.color} / ${variant.size} (${variant.sku})`,
+        variantLabel: `${variant.color} / ${variant.size}`,
         quantity,
         stock: variant.stock,
       },

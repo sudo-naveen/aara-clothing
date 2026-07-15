@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { createProductSchema, updateProductSchema, type CreateProductInput, type UpdateProductInput } from "./inventory-validation";
+import { createVariantSchema, type CreateVariantInput } from "@/features/variants/variants-validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,8 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VariantForm } from "@/features/variants/variant-form";
 import { VariantEditDialog } from "@/features/variants/variant-edit-dialog";
-import { ImageUpload } from "@/features/images/image-upload";
-import { ArrowLeft, Save, Pencil } from "lucide-react";
+import { ArrowLeft, Save, Pencil, Plus, Trash2 } from "lucide-react";
 import type { Product, ProductVariant } from "@/types";
 import { cn } from "@/lib/utils";
 
@@ -23,10 +23,24 @@ interface ProductFormProps {
   initialData?: Product;
 }
 
+interface InitialVariant {
+  id: string;
+  color: string;
+  size: string;
+  stock: number;
+}
+
+let variantCounter = 0;
+
 export function ProductForm({ mode, initialData }: ProductFormProps) {
   const router = useRouter();
   const isEdit = mode === "edit";
   const [editingVariant, setEditingVariant] = useState<ProductVariant | null>(null);
+  const [initialVariants, setInitialVariants] = useState<InitialVariant[]>([]);
+  const [variantColor, setVariantColor] = useState("");
+  const [variantSize, setVariantSize] = useState("");
+  const [variantStock, setVariantStock] = useState(0);
+  const [variantErrors, setVariantErrors] = useState<{ color?: string; size?: string }>({});
 
   const schema = isEdit ? updateProductSchema : createProductSchema;
 
@@ -45,6 +59,38 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
     },
   });
 
+  function handleAddInitialVariant() {
+    const result = createVariantSchema.omit({ productId: true }).safeParse({
+      color: variantColor,
+      size: variantSize,
+      stock: variantStock,
+    });
+
+    if (!result.success) {
+      const fieldErrors: { color?: string; size?: string } = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0];
+        if (field === "color") fieldErrors.color = issue.message;
+        if (field === "size") fieldErrors.size = issue.message;
+      }
+      setVariantErrors(fieldErrors);
+      return;
+    }
+
+    setVariantErrors({});
+    setInitialVariants((prev) => [
+      ...prev,
+      { id: `temp-${++variantCounter}`, color: result.data.color, size: result.data.size, stock: result.data.stock },
+    ]);
+    setVariantColor("");
+    setVariantSize("");
+    setVariantStock(0);
+  }
+
+  function handleRemoveInitialVariant(id: string) {
+    setInitialVariants((prev) => prev.filter((v) => v.id !== id));
+  }
+
   async function onSubmit(data: CreateProductInput | UpdateProductInput) {
     try {
       const url = isEdit ? `/api/inventory/${initialData!.id}` : "/api/inventory";
@@ -62,7 +108,24 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
         throw new Error(result.error ?? "Failed to save product");
       }
 
-      router.push("/dashboard/inventory");
+      if (!isEdit && initialVariants.length > 0) {
+        const productId = result.data.id;
+        for (const variant of initialVariants) {
+          await fetch(`/api/inventory/${productId}/variants`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              productId,
+              color: variant.color,
+              size: variant.size,
+              stock: variant.stock,
+            }),
+          });
+        }
+        router.push("/dashboard/inventory");
+      } else {
+        router.push("/dashboard/inventory");
+      }
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
@@ -135,6 +198,43 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
               <Label htmlFor="isActive">Active</Label>
             </div>
 
+            {!isEdit && (
+              <div className="space-y-3 rounded-lg border border-border bg-muted/20 p-4">
+                <Label className="text-sm font-medium">Initial Variants (optional)</Label>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
+                  <div className="space-y-1">
+                    <Input placeholder="Color (e.g. Black)" value={variantColor} onChange={(e) => { setVariantColor(e.target.value); setVariantErrors((p) => ({ ...p, color: undefined })); }} />
+                    {variantErrors.color && <p className="text-xs text-destructive">{variantErrors.color}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <Input placeholder="Size (e.g. M)" value={variantSize} onChange={(e) => { setVariantSize(e.target.value); setVariantErrors((p) => ({ ...p, size: undefined })); }} />
+                    {variantErrors.size && <p className="text-xs text-destructive">{variantErrors.size}</p>}
+                  </div>
+                  <div className="space-y-1">
+                    <Input type="number" min="0" placeholder="Stock" value={variantStock || ""} onChange={(e) => setVariantStock(Number(e.target.value))} />
+                  </div>
+                  <Button type="button" variant="outline" onClick={handleAddInitialVariant}>
+                    <Plus className="size-4" />
+                    Add
+                  </Button>
+                </div>
+
+                {initialVariants.length > 0 && (
+                  <div className="space-y-2">
+                    {initialVariants.map((v) => (
+                      <div key={v.id} className="flex items-center gap-3 rounded-md border border-border bg-background px-3 py-2 text-sm">
+                        <span className="flex-1">{v.color} / {v.size}</span>
+                        <span className="text-muted-foreground">Stock: {v.stock}</span>
+                        <Button type="button" variant="ghost" size="icon-sm" onClick={() => handleRemoveInitialVariant(v.id)}>
+                          <Trash2 className="size-3 text-destructive" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:flex-wrap">
               <Button type="button" variant="outline" onClick={() => router.back()} className="w-full sm:w-auto">
                 Cancel
@@ -173,8 +273,8 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
                       key={variant.id}
                       className="rounded-lg border border-border bg-muted/20 p-4 transition-colors hover:bg-muted/30"
                     >
-                      <div className="mb-3 flex items-start justify-between gap-2">
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-4 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3 flex-1">
                           <div>
                             <span className="text-muted-foreground">Color:</span>{" "}
                             <span className="font-medium">{variant.color}</span>
@@ -182,10 +282,6 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
                           <div>
                             <span className="text-muted-foreground">Size:</span>{" "}
                             <span className="font-medium">{variant.size}</span>
-                          </div>
-                          <div>
-                            <span className="text-muted-foreground">SKU:</span>{" "}
-                            <span className="font-medium font-mono text-xs">{variant.sku}</span>
                           </div>
                           <div>
                             <span className="text-muted-foreground">Stock:</span>{" "}
@@ -203,12 +299,6 @@ export function ProductForm({ mode, initialData }: ProductFormProps) {
                           Edit
                         </Button>
                       </div>
-
-                      <ImageUpload
-                        variantId={variant.id}
-                        images={variant.images ?? []}
-                        onImageChange={() => router.refresh()}
-                      />
                     </div>
                   ))}
                 </div>

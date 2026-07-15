@@ -18,7 +18,6 @@ interface OrderItem {
     product: { id: string; name: string };
     color: string;
     size: string;
-    sku: string;
   };
   quantity: number;
 }
@@ -271,7 +270,6 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                               <p className="text-xs text-muted-foreground">
                                 {item.variant.color} / {item.variant.size}
                               </p>
-                              <p className="font-mono text-[10px] text-muted-foreground">{item.variant.sku}</p>
                             </div>
                             <span className="shrink-0 font-medium">x{item.quantity}</span>
                           </div>
@@ -367,7 +365,6 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                       <th className="w-10 px-2" />
                                       <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Product</th>
                                       <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Variant</th>
-                                      <th className="px-4 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">SKU</th>
                                       <th className="px-4 py-2 text-right text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Qty</th>
                                       <th className="w-[100px] px-2" />
                                     </tr>
@@ -381,9 +378,6 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                         </td>
                                         <td className="px-4 py-2 text-muted-foreground">
                                           {item.variant.color} / {item.variant.size}
-                                        </td>
-                                        <td className="px-4 py-2">
-                                          <span className="font-mono text-xs text-muted-foreground">{item.variant.sku}</span>
                                         </td>
                                         <td className="px-4 py-2 text-right font-medium">{item.quantity}</td>
                                         <td className="w-[100px] px-2" />
