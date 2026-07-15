@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useTransition } from "react";
+import React, { useState, useCallback, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -285,72 +285,81 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
 
             {/* Desktop: Table view */}
             <div className="hidden md:block overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm table-fixed">
+                <colgroup>
+                  <col className="w-10" />
+                  <col className="w-[110px]" />
+                  <col className="w-[170px]" />
+                  <col className="w-[60px]" />
+                  <col className="w-[110px]" />
+                  <col />
+                </colgroup>
                 <thead>
                   <tr className="border-b border-border/50 bg-muted/20 backdrop-blur-sm">
-                    <th className="w-10 px-2 py-3" />
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Order #</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Items</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Date</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</th>
+                    <th className="px-2 py-3" />
+                    <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Order #</th>
+                    <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Status</th>
+                    <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Items</th>
+                    <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Date</th>
+                    <th className="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredOrders.map((order, index) => {
                     const isExpanded = expandedOrder === order.id;
                     return (
-                      <tr key={order.id} className={cn("border-b border-border/30 last:border-0 table-row-hover", index % 2 === 1 && "bg-muted/5")}>
-                        <td colSpan={6} className="p-0">
-                          <div>
-                            <div
-                              role="button"
-                              tabIndex={0}
+                      <React.Fragment key={order.id}>
+                        <tr className={cn("border-b border-border/30 table-row-hover", index % 2 === 1 && "bg-muted/5")}>
+                          <td className="px-2 py-3 text-center">
+                            <button
+                              type="button"
                               onClick={() => toggleExpand(order.id)}
-                              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleExpand(order.id); }}
-                              className="flex w-full items-center px-2 py-3 text-left cursor-pointer"
+                              className="inline-flex items-center justify-center"
                             >
-                              <div className="flex w-6 shrink-0 items-center justify-center">
-                                {isExpanded ? (
-                                  <ChevronDown className="size-4 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="size-4 text-muted-foreground" />
-                                )}
-                              </div>
-                              <span className="w-[100px] px-2 font-mono text-xs">#{order.orderNumber}</span>
-                              <div className="w-[160px] px-2">
-                                <StatusSelector
-                                  orderId={order.id}
-                                  currentStatus={order.status}
-                                  onStatusChange={onStatusChange}
-                                />
-                              </div>
-                              <span className="w-[60px] px-2 text-center text-muted-foreground">{order.items.length}</span>
-                              <span className="w-[120px] px-2 text-muted-foreground">
-                                {new Date(order.createdAt).toLocaleDateString()}
-                              </span>
-                              <div className="flex flex-1 items-center justify-end gap-2 px-2">
-                                <Link
-                                  href={`/dashboard/customers/${customerId}/orders/${order.id}`}
-                                  className="text-sm font-medium text-primary hover:underline"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  View
+                              {isExpanded ? (
+                                <ChevronDown className="size-4 text-muted-foreground" />
+                              ) : (
+                                <ChevronRight className="size-4 text-muted-foreground" />
+                              )}
+                            </button>
+                          </td>
+                          <td className="px-3 py-3 truncate">
+                            <span className="font-mono text-xs">#{order.orderNumber}</span>
+                          </td>
+                          <td className="px-3 py-3">
+                            <StatusSelector
+                              orderId={order.id}
+                              currentStatus={order.status}
+                              onStatusChange={onStatusChange}
+                            />
+                          </td>
+                          <td className="px-3 py-3 text-center text-muted-foreground">
+                            {order.items.length}
+                          </td>
+                          <td className="px-3 py-3 truncate text-muted-foreground">
+                            {new Date(order.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-3 py-3">
+                            <div className="flex items-center justify-end gap-1">
+                              <Link
+                                href={`/dashboard/customers/${customerId}/orders/${order.id}`}
+                                className="text-sm font-medium text-primary hover:underline shrink-0"
+                              >
+                                View
+                              </Link>
+                              {(order.status as string) === "NOT_STARTED" && (
+                                <Link href={`/dashboard/customers/${customerId}/orders/${order.id}/edit`}>
+                                  <Button variant="ghost" size="icon-sm">
+                                    <Pencil className="size-4" />
+                                  </Button>
                                 </Link>
-                                {(order.status as string) === "NOT_STARTED" && (
-                                  <Link
-                                    href={`/dashboard/customers/${customerId}/orders/${order.id}/edit`}
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    <Button variant="ghost" size="icon-sm">
-                                      <Pencil className="size-4" />
-                                    </Button>
-                                  </Link>
-                                )}
-                              </div>
+                              )}
                             </div>
-
-                            {isExpanded && order.items.length > 0 && (
+                          </td>
+                        </tr>
+                        {isExpanded && order.items.length > 0 && (
+                          <tr key={`${order.id}-items`}>
+                            <td colSpan={6} className="p-0">
                               <div className="border-t border-border/20 bg-muted/10">
                                 <table className="w-full text-sm">
                                   <thead>
@@ -383,10 +392,10 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange }: Pr
                                   </tbody>
                                 </table>
                               </div>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
+                            </td>
+                          </tr>
+                        )}
+                      </React.Fragment>
                     );
                   })}
                 </tbody>
