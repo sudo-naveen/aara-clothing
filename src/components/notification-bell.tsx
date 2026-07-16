@@ -5,6 +5,7 @@ import { Popover } from "@base-ui/react/popover";
 import { Bell } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { usePushNotifications } from "@/features/notifications/use-push-notifications";
 import { cn } from "@/lib/utils";
 
@@ -43,11 +44,17 @@ export function NotificationBell() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(notificationId ? { notificationId } : { markAll: true }),
       });
-      if (!response.ok) throw new Error("Failed to mark notification as read");
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to mark notification as read");
+      }
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update notification");
     },
   });
 
