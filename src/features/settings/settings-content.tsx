@@ -1,13 +1,12 @@
 "use client";
 
-import { Settings, User, Shield, Monitor, Boxes, Bell, Info } from "lucide-react";
+import { Settings, User, Monitor, Boxes, Bell, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { ProfileSection } from "@/features/settings/profile-section";
+import { AccountSection } from "@/features/settings/account-section";
 import { AppearanceSection } from "@/features/settings/appearance-section";
 import { InventorySection } from "@/features/settings/inventory-section";
 import { NotificationsSection } from "@/features/settings/notifications-section";
 import { AboutSection } from "@/features/settings/about-section";
-import { SecuritySection } from "@/features/settings/security-section";
 
 interface SettingsContentProps {
   name: string | null;
@@ -38,11 +37,8 @@ export function SettingsContent({ name, username }: SettingsContentProps) {
 
       <Tabs defaultValue="profile" storageKey={TAB_STORAGE_KEY}>
         <TabsList>
-          <TabsTrigger value="profile" icon={<User />}>
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="security" icon={<Shield />}>
-            Security
+          <TabsTrigger value="account" icon={<User />}>
+            Account
           </TabsTrigger>
           <TabsTrigger value="appearance" icon={<Monitor />}>
             Appearance
@@ -59,12 +55,8 @@ export function SettingsContent({ name, username }: SettingsContentProps) {
         </TabsList>
 
         <div className="flex-1 min-w-0">
-          <TabsContent value="profile">
-            <ProfileSection name={name} username={username} />
-          </TabsContent>
-
-          <TabsContent value="security">
-            <SecuritySection />
+          <TabsContent value="account">
+            <AccountSection name={name} username={username} />
           </TabsContent>
 
           <TabsContent value="appearance">
