@@ -1,21 +1,23 @@
 "use client";
 
-import { Settings, User, Monitor, Boxes, Bell, Info } from "lucide-react";
+import { Settings, User, Monitor, Boxes, Bell, Users, Info } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AccountSection } from "@/features/settings/account-section";
 import { AppearanceSection } from "@/features/settings/appearance-section";
 import { InventorySection } from "@/features/settings/inventory-section";
 import { NotificationsSection } from "@/features/settings/notifications-section";
+import { UserManagementSection } from "@/features/settings/user-management-section";
 import { AboutSection } from "@/features/settings/about-section";
 
 interface SettingsContentProps {
   name: string | null;
   username: string;
+  isAdmin?: boolean;
 }
 
 const TAB_STORAGE_KEY = "aara-settings-tab";
 
-export function SettingsContent({ name, username }: SettingsContentProps) {
+export function SettingsContent({ name, username, isAdmin }: SettingsContentProps) {
   return (
     <div className="relative space-y-4 p-4 sm:space-y-6 sm:p-8">
       <div className="pointer-events-none absolute -top-24 -right-24 -z-10 size-56 rounded-full bg-aara-accent/8 blur-3xl" />
@@ -49,6 +51,11 @@ export function SettingsContent({ name, username }: SettingsContentProps) {
           <TabsTrigger value="notifications" icon={<Bell />}>
             Notifications
           </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="users" icon={<Users />}>
+              Users
+            </TabsTrigger>
+          )}
           <TabsTrigger value="about" icon={<Info />}>
             About
           </TabsTrigger>
@@ -70,6 +77,12 @@ export function SettingsContent({ name, username }: SettingsContentProps) {
           <TabsContent value="notifications">
             <NotificationsSection />
           </TabsContent>
+
+          {isAdmin && (
+            <TabsContent value="users">
+              <UserManagementSection />
+            </TabsContent>
+          )}
 
           <TabsContent value="about">
             <AboutSection />

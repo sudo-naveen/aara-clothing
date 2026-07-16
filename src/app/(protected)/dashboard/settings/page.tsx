@@ -14,6 +14,7 @@ export default async function SettingsPage() {
     <SettingsContent
       name={session.user.name}
       username={session.user.username}
+      isAdmin={session.user.isAdmin}
     />
   );
 }
