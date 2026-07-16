@@ -18,6 +18,7 @@ import { OrderForm } from "@/features/orders/order-form";
 import { CustomerOrdersSection } from "./customer-orders-section";
 import { Pencil, Plus, Trash2, ShoppingBag, Package, Calendar } from "lucide-react";
 import type { Customer } from "@/types";
+import { formatDate } from "@/utils/format";
 import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
 interface OrderItem {
@@ -150,11 +151,11 @@ export function CustomerProfileClient({ customer, stats, orders }: Props) {
             </div>
             <div>
               <span className="text-sm text-muted-foreground">Created</span>
-              <p className="font-medium">{new Date(customer.createdAt).toLocaleDateString()}</p>
+              <p className="font-medium">{formatDate(customer.createdAt)}</p>
             </div>
             <div>
               <span className="text-sm text-muted-foreground">Last Updated</span>
-              <p className="font-medium">{new Date(customer.updatedAt).toLocaleDateString()}</p>
+              <p className="font-medium">{formatDate(customer.updatedAt)}</p>
             </div>
           </div>
         </CardContent>
@@ -200,7 +201,7 @@ export function CustomerProfileClient({ customer, stats, orders }: Props) {
             <CardContent>
               <div className="text-2xl font-bold">
                 {stats.mostRecentOrderDate
-                  ? new Date(stats.mostRecentOrderDate).toLocaleDateString()
+                  ? formatDate(stats.mostRecentOrderDate)
                   : "-"}
               </div>
             </CardContent>

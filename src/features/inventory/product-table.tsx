@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Pencil, Trash2, Package, ChevronDown, ChevronRight } from "lucide-react";
 import { getStockStatus, STOCK_STATUS_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/utils/format";
 
 interface VariantRow {
   id: string;
@@ -267,7 +268,7 @@ export function ProductTable({ data, variantsInUse, page, totalPages, search }: 
                             </Badge>
                           </div>
                           <div className="w-28 text-muted-foreground">
-                            {new Date(item.createdAt).toLocaleDateString()}
+                            {formatDate(item.createdAt)}
                           </div>
                           <div className="flex w-20 items-center justify-end gap-1 pr-3">
                             <Link href={`/dashboard/inventory/${item.id}`}>

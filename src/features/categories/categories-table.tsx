@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pencil, Trash2, Layers } from "lucide-react";
 import type { Column } from "@/components/data-table";
+import { formatDate } from "@/utils/format";
 
 interface CategoryRow {
   id: string;
@@ -71,7 +72,7 @@ export function CategoriesTable({ data, page, totalPages, search }: Props) {
     {
       key: "createdAt",
       header: "Created At",
-      cell: (item) => new Date(item.createdAt).toLocaleDateString(),
+      cell: (item) => formatDate(item.createdAt),
     },
     {
       key: "actions",

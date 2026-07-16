@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Pencil, Trash2, Users } from "lucide-react";
 import type { Column } from "@/components/data-table";
+import { formatDate } from "@/utils/format";
 
 interface CustomerRow {
   id: string;
@@ -88,7 +89,7 @@ export function CustomersTable({ data, page, totalPages, search }: Props) {
       cell: (item) => (
         <span className="text-muted-foreground">
           {item.lastOrderDate
-            ? new Date(item.lastOrderDate).toLocaleDateString()
+            ? formatDate(item.lastOrderDate)
             : "-"}
         </span>
       ),
@@ -96,7 +97,7 @@ export function CustomersTable({ data, page, totalPages, search }: Props) {
     {
       key: "createdAt",
       header: "Created At",
-      cell: (item) => new Date(item.createdAt).toLocaleDateString(),
+      cell: (item) => formatDate(item.createdAt),
     },
     {
       key: "actions",
@@ -184,7 +185,7 @@ export function CustomersTable({ data, page, totalPages, search }: Props) {
                   </span>
                   {item.lastOrderDate && (
                     <span className="text-xs text-muted-foreground">
-                      Last: {new Date(item.lastOrderDate).toLocaleDateString()}
+                      Last: {formatDate(item.lastOrderDate)}
                     </span>
                   )}
                 </div>

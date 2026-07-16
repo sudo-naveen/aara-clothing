@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Pencil, ArrowLeft } from "lucide-react";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_FLOW, ORDER_STATUS_VARIANT } from "@/lib/constants";
+import { formatDate } from "@/utils/format";
 
 interface Props {
   params: Promise<{ id: string; orderId: string }>;
@@ -116,7 +117,7 @@ export default async function OrderDetailPage({ params }: Props) {
           <CardContent className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Created</span>
-              <span>{new Date(order.createdAt).toLocaleDateString()}</span>
+              <span>{formatDate(order.createdAt)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Created by</span>

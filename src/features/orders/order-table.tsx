@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, Pencil } from "lucide-react";
 import { ORDER_STATUS_LABELS, ORDER_STATUSES, ORDER_STATUS_VARIANT } from "@/lib/constants";
 import type { Column } from "@/components/data-table";
+import { formatDate } from "@/utils/format";
 
 interface OrderRow {
   id: string;
@@ -47,7 +48,7 @@ export function OrderTable({ data, customerId }: Props) {
     {
       key: "createdAt",
       header: "Date",
-      cell: (item) => new Date(item.createdAt).toLocaleDateString(),
+      cell: (item) => formatDate(item.createdAt),
     },
     {
       key: "actions",

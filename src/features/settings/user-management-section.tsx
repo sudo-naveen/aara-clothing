@@ -11,6 +11,7 @@ import {
   type UpdateUserInput,
 } from "./settings-validation";
 import { Button } from "@/components/ui/button";
+import { formatDate } from "@/utils/format";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -440,7 +441,7 @@ export function UserManagementSection() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                    {formatDate(user.createdAt)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <Button
@@ -506,7 +507,7 @@ export function UserManagementSection() {
                         {user.isAdmin ? "Admin" : "User"}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {formatDate(user.createdAt)}
                       </span>
                     </div>
                   </div>

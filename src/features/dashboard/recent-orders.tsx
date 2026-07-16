@@ -10,6 +10,7 @@ import { ArrowRight, ShoppingCart, Package } from "lucide-react";
 import { ORDER_STATUS_LABELS, ORDER_STATUS_VARIANT } from "@/lib/constants";
 import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/utils/format";
 
 interface RecentOrder {
   id: string;
@@ -43,7 +44,7 @@ function getTimeAgo(dateString: string): string {
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
+  return formatDate(date);
 }
 
 function SkeletonRow() {

@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, ChevronDown, ChevronRight, Pencil, Trash2, Loader2, Package } from "lucide-react";
 import { ORDER_STATUSES, ORDER_STATUS_LABELS, ORDER_STATUS_VARIANT, type OrderStatus } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import { formatDate } from "@/utils/format";
 import { useDashboardRefresh } from "@/components/providers/dashboard-refresh-provider";
 
 interface OrderItem {
@@ -260,7 +261,7 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange, onNe
                         <div className="flex items-center gap-2">
                           <span className="font-mono text-xs text-muted-foreground">#{order.orderNumber}</span>
                           <span className="text-xs text-muted-foreground">
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {formatDate(order.createdAt)}
                           </span>
                         </div>
                         <div className="mt-1 flex items-center gap-2">
@@ -384,7 +385,7 @@ export function CustomerOrdersSection({ customerId, orders, onStatusChange, onNe
                             {order.items.length}
                           </td>
                           <td className="px-3 py-3 truncate text-muted-foreground">
-                            {new Date(order.createdAt).toLocaleDateString()}
+                            {formatDate(order.createdAt)}
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center justify-end gap-1">
