@@ -1,27 +1,19 @@
 'use client';
 
-import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+
+const isPushSupported = typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window;
 
 export function usePushNotifications() {
   const { data: session } = useSession();
   const [subscription, setSubscription] = useState<PushSubscription | null>(null);
-  const [permission, setPermission] = useState<NotificationPermission>('default');
-
-  const isSupported = useSyncExternalStore(
-    () => () => {},
-    () => typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window,
-    () => false,
+  const [permission, setPermission] = useState<NotificationPermission>(
+    isPushSupported ? Notification.permission : 'denied'
   );
 
   useEffect(() => {
-    if (isSupported && permission === 'default') {
-      setPermission(Notification.permission);
-    }
-  }, [isSupported, permission]);
-
-  useEffect(() => {
-    if (!session?.user || !isSupported) return;
+    if (!session?.user || !isPushSupported) return;
 
     let cancelled = false;
 
@@ -31,7 +23,9 @@ export function usePushNotifications() {
         const existingSubscription = await registration.pushManager.getSubscription();
         if (!cancelled && existingSubscription) {
           setSubscription(existingSubscription);
-          setPermission('granted');
+          if (Notification.permission === 'granted') {
+            setPermission('granted');
+          }
         }
       } catch (error) {
         console.error('Error checking subscription:', error);
@@ -43,11 +37,9 @@ export function usePushNotifications() {
     return () => {
       cancelled = true;
     };
-  }, [session, isSupported]);
+  }, [session?.user]);
 
   const subscribeToPush = useCallback(async () => {
-    if (!isSupported) return;
-
     try {
       const registration = await navigator.serviceWorker.register('/sw.js');
       await navigator.serviceWorker.ready;
@@ -73,10 +65,10 @@ export function usePushNotifications() {
     } catch (error) {
       console.error('Error subscribing to push:', error);
     }
-  }, [isSupported]);
+  }, []);
 
   const requestPermission = useCallback(async () => {
-    if (!isSupported) {
+    if (!isPushSupported) {
       console.warn('Push notifications not supported');
       return false;
     }
@@ -94,7 +86,7 @@ export function usePushNotifications() {
       console.error('Error requesting permission:', error);
       return false;
     }
-  }, [isSupported, subscribeToPush]);
+  }, [subscribeToPush]);
 
   const unsubscribe = useCallback(async () => {
     if (subscription) {
@@ -115,7 +107,7 @@ export function usePushNotifications() {
   return {
     permission,
     subscription,
-    isSupported,
+    isSupported: isPushSupported,
     requestPermission,
     unsubscribe,
   };
