@@ -121,9 +121,11 @@ export async function deleteCustomer(id: string) {
   const existing = await prisma.customer.findUnique({ where: { id } });
   if (!existing) return null;
 
-  const orderCount = await prisma.order.count({ where: { customerId: id } });
-  if (orderCount > 0) {
-    throw new Error("Cannot delete customer with existing orders");
+  const activeOrderCount = await prisma.order.count({
+    where: { customerId: id, status: { not: "DONE" } },
+  });
+  if (activeOrderCount > 0) {
+    throw new Error("Cannot delete customer with active orders (not yet completed)");
   }
 
   return prisma.customer.delete({ where: { id } });
