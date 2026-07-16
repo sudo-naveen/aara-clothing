@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AccentColorProvider } from "@/components/providers/accent-color-provider";
 import { DashboardRefreshProvider } from "@/components/providers/dashboard-refresh-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -32,19 +33,21 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AccentColorProvider>
-              <DashboardRefreshProvider>
-                {children}
-              </DashboardRefreshProvider>
-            </AccentColorProvider>
-            <Toaster />
-          </ThemeProvider>
+          <QueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <AccentColorProvider>
+                <DashboardRefreshProvider>
+                  {children}
+                </DashboardRefreshProvider>
+              </AccentColorProvider>
+              <Toaster />
+            </ThemeProvider>
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
