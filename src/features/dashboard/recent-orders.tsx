@@ -17,7 +17,7 @@ interface RecentOrder {
   orderNumber: number;
   status: string;
   createdAt: string;
-  customer: { id: string; name: string };
+  customer: { id: string; name: string } | null;
   items: { quantity: number }[];
 }
 
@@ -136,7 +136,7 @@ export function RecentOrders() {
               return (
                 <Link
                   key={order.id}
-                  href={`/dashboard/customers/${order.customer.id}`}
+                  href={order.customer ? `/dashboard/customers/${order.customer.id}` : "#"}
                   className={cn(
                     "group flex items-center justify-between gap-3 rounded-xl border border-border/30 p-3.5 transition-all duration-200 sm:p-4",
                     "hover:border-border/60 hover:bg-muted/30 hover:shadow-soft",
@@ -161,7 +161,7 @@ export function RecentOrders() {
                         </span>
                         <span className="hidden text-xs text-muted-foreground/50 sm:inline">·</span>
                         <span className="hidden truncate text-sm text-muted-foreground sm:inline">
-                          {order.customer.name}
+                          {order.customer?.name || "Deleted customer"}
                         </span>
                       </div>
                       <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
