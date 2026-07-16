@@ -65,6 +65,7 @@ export async function getRecentOrders(limit = 5) {
   return prisma.order.findMany({
     take: limit,
     orderBy: { createdAt: "desc" },
+    where: { customer: { is: {} } },
     include: {
       customer: { select: { id: true, name: true } },
       items: { select: { quantity: true } },
