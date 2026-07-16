@@ -94,7 +94,7 @@ export function NotificationBell() {
               </h3>
               {unreadCount > 0 && (
                 <button
-                  onClick={() => markReadMutation.mutate()}
+                  onClick={() => markReadMutation.mutate(undefined)}
                   className="text-xs text-primary hover:underline"
                 >
                   Mark all read
