@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { AccentColorProvider } from "@/components/providers/accent-color-provider";
 import { DashboardRefreshProvider } from "@/components/providers/dashboard-refresh-provider";
-import { AuthProvider } from "@/components/providers/auth-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -31,21 +30,19 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <AccentColorProvider>
-              <DashboardRefreshProvider>
-                {children}
-              </DashboardRefreshProvider>
-            </AccentColorProvider>
-            <Toaster />
-          </ThemeProvider>
-        </AuthProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AccentColorProvider>
+            <DashboardRefreshProvider>
+              {children}
+            </DashboardRefreshProvider>
+          </AccentColorProvider>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
