@@ -1,27 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Popover } from "@base-ui/react/popover";
 import { Bell } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { usePushNotifications } from "@/features/notifications/use-push-notifications";
 import { cn } from "@/lib/utils";
 
 interface Notification {
   id: string;
   title: string;
-  description: string;
-  timestamp: string;
+  body: string;
   read: boolean;
+  createdAt: string;
+  orderId?: string;
 }
 
-const notifications: Notification[] = [];
-
-function getUnreadCount() {
-  return notifications.filter((n) => !n.read).length;
+async function fetchNotifications(): Promise<{ notifications: Notification[]; unreadCount: number }> {
+  const response = await fetch("/api/notifications");
+  if (!response.ok) throw new Error("Failed to fetch notifications");
+  return response.json();
 }
 
 export function NotificationBell() {
+  const { data: session } = useSession();
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const unreadCount = getUnreadCount();
+  const { permission, isSupported, requestPermission } = usePushNotifications();
+
+  const { data } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: fetchNotifications,
+    enabled: !!session?.user,
+    refetchInterval: 30000,
+  });
+
+  const markReadMutation = useMutation({
+    mutationFn: async (notificationId?: string) => {
+      const response = await fetch("/api/notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(notificationId ? { notificationId } : { markAll: true }),
+      });
+      if (!response.ok) throw new Error("Failed to mark notification as read");
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] });
+    },
+  });
+
+  const notifications = data?.notifications || [];
+  const unreadCount = data?.unreadCount || 0;
+
+  const handleEnableNotifications = useCallback(async () => {
+    await requestPermission();
+  }, [requestPermission]);
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
@@ -46,11 +81,30 @@ export function NotificationBell() {
               "data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
             )}
           >
-            <div className="border-b border-border/50 px-4 py-3">
+            <div className="border-b border-border/50 px-4 py-3 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-card-foreground">
                 Notifications
               </h3>
+              {unreadCount > 0 && (
+                <button
+                  onClick={() => markReadMutation.mutate()}
+                  className="text-xs text-primary hover:underline"
+                >
+                  Mark all read
+                </button>
+              )}
             </div>
+
+            {isSupported && permission !== "granted" && (
+              <div className="border-b border-border/50 px-4 py-3">
+                <button
+                  onClick={handleEnableNotifications}
+                  className="w-full rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+                >
+                  Enable Push Notifications
+                </button>
+              </div>
+            )}
 
             <div className="max-h-80 space-y-px overflow-y-auto">
               {notifications.length === 0 ? (
@@ -69,8 +123,9 @@ export function NotificationBell() {
                 notifications.map((notification) => (
                   <div
                     key={notification.id}
+                    onClick={() => markReadMutation.mutate(notification.id)}
                     className={cn(
-                      "border-b border-border/30 px-4 py-3.5 transition-colors duration-150 last:border-b-0 hover:bg-accent/10",
+                      "cursor-pointer border-b border-border/30 px-4 py-3.5 transition-colors duration-150 last:border-b-0 hover:bg-accent/10",
                       !notification.read && "bg-accent/10"
                     )}
                   >
@@ -90,10 +145,10 @@ export function NotificationBell() {
                           {notification.title}
                         </p>
                         <p className="mt-0.5 text-xs text-muted-foreground/80 line-clamp-2">
-                          {notification.description}
+                          {notification.body}
                         </p>
                         <p className="mt-1 text-xs text-muted-foreground/60">
-                          {notification.timestamp}
+                          {new Date(notification.createdAt).toLocaleString()}
                         </p>
                       </div>
                     </div>

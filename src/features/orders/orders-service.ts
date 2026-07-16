@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
-import { ORDER_STATUS_FLOW, type OrderStatus } from "@/lib/constants";
+import { ORDER_STATUS_FLOW, ORDER_STATUS_LABELS, type OrderStatus } from "@/lib/constants";
 import type {
   CreateOrderInput,
   UpdateOrderInput,
   OrderQuery,
 } from "./orders-validation";
+import { sendNotification } from "@/features/notifications/notifications-service";
+import { createNotification } from "@/features/notifications/notifications-db-service";
 
 export async function listOrders(query: OrderQuery) {
   const { page, limit, search, customerId } = query;
@@ -296,10 +298,13 @@ export async function updateOrder(id: string, input: UpdateOrderInput) {
   });
 }
 
-export async function updateOrderStatus(id: string, status: OrderStatus) {
+export async function updateOrderStatus(id: string, status: OrderStatus, userId: string) {
   const existing = await prisma.order.findUnique({
     where: { id },
-    include: { items: true },
+    include: {
+      items: true,
+      user: { select: { id: true, username: true } },
+    },
   });
   if (!existing) throw new Error("Order not found");
 
@@ -307,7 +312,7 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
     return getOrderById(id);
   }
 
-  return prisma.$transaction(async (tx) => {
+  const updatedOrder = await prisma.$transaction(async (tx) => {
     // When reverting to NOT_STARTED, restore stock (undo the original deduction)
     if (status === "NOT_STARTED" && existing.status !== "NOT_STARTED") {
       for (const item of existing.items) {
@@ -339,6 +344,28 @@ export async function updateOrderStatus(id: string, status: OrderStatus) {
       },
     });
   });
+
+  // Send notifications to all other users
+  const orderNumber = existing.orderNumber;
+  const statusLabel = ORDER_STATUS_LABELS[status];
+  const notificationTitle = `Order #${orderNumber}`;
+  const notificationBody = `Status updated to "${statusLabel}" by ${existing.user?.username || 'a user'}`;
+
+  // Get all users except the one who made the change
+  const otherUsers = await prisma.user.findMany({
+    where: { id: { not: userId } },
+    select: { id: true },
+  });
+
+  // Create notifications in DB and send push notifications
+  for (const user of otherUsers) {
+    await createNotification(user.id, notificationTitle, notificationBody, id);
+    await sendNotification(user.id, notificationTitle, notificationBody, id).catch(() => {
+      // Ignore push notification errors - they're best effort
+    });
+  }
+
+  return updatedOrder;
 }
 
 export async function deleteOrder(id: string) {

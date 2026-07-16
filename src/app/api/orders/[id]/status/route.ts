@@ -14,7 +14,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await request.json();
     const { status } = orderStatusSchema.parse(body);
-    const order = await updateOrderStatus(id, status);
+    const order = await updateOrderStatus(id, status, authResult.userId);
     return successResponse(order, "Order status updated");
   } catch (error) {
     if (error instanceof Error) {
