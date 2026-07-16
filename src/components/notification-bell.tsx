@@ -68,10 +68,10 @@ export function NotificationBell() {
   return (
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger
-        className="relative flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 hover:bg-white/10 hover:text-white"
+        className="relative flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors duration-150 hover:bg-white/10 hover:text-white sm:size-11"
         aria-label="Notifications"
       >
-        <Bell className="size-5" />
+        <Bell className="size-4 sm:size-5" />
         {unreadCount > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
             {unreadCount > 9 ? "9+" : unreadCount}

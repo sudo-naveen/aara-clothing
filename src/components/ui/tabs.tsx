@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, createContext, useContext, useRef } from "react";
+import { useState, useCallback, createContext, useContext, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
 
 interface TabsContextValue {
@@ -24,13 +24,14 @@ interface TabsProps {
 }
 
 function Tabs({ defaultValue, storageKey, className, children }: TabsProps) {
-  const [activeTab, setActiveTabState] = useState<string>(() => {
-    if (storageKey && typeof window !== "undefined") {
+  const [activeTab, setActiveTabState] = useState<string>(defaultValue);
+
+  useEffect(() => {
+    if (storageKey) {
       const stored = sessionStorage.getItem(storageKey);
-      if (stored) return stored;
+      if (stored) setActiveTabState(stored);
     }
-    return defaultValue;
-  });
+  }, [storageKey]);
 
   const setActiveTab = useCallback(
     (value: string) => {

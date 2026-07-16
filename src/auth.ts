@@ -57,12 +57,15 @@ export const {
   ],
   callbacks: {
     ...authConfig.callbacks,
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
         token.username = (user as { username: string }).username;
         token.isAdmin = (user as { isAdmin: boolean }).isAdmin;
+      }
+      if (trigger === "update" && session?.name) {
+        token.name = session.name;
       }
       return token;
     },

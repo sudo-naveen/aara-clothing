@@ -62,25 +62,25 @@ export function Header({ username }: { username: string }) {
         <div className="absolute -left-8 -top-8 size-24 rounded-full bg-white/[0.03]" />
         <div className="absolute bottom-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
       </div>
-      <div className="relative px-4 pb-4 pt-4 sm:px-6 sm:pb-5 sm:pt-5">
+      <div className="relative px-3 pb-3 pt-3 sm:px-6 sm:pb-5 sm:pt-5">
         {/* Top row: greeting + actions */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <h1 className="text-lg font-semibold tracking-tight text-white sm:text-2xl lg:text-3xl">
+        <div className="flex items-start justify-between gap-2 sm:gap-3">
+          <div className="min-w-0 space-y-0.5 sm:space-y-1">
+            <h1 className="text-sm font-semibold tracking-tight text-white sm:text-2xl lg:text-3xl">
               {getGreeting()}, <span className="font-bold">{username}</span>
             </h1>
-            <div className="flex items-center gap-2 text-xs text-white/60 sm:text-sm">
-              <CalendarDays className="size-3.5 shrink-0" />
+            <div className="flex items-center gap-1.5 text-[11px] text-white/60 sm:text-sm sm:gap-2">
+              <CalendarDays className="size-3 shrink-0 sm:size-3.5" />
               <span>{getFormattedDate()}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1 shrink-0 sm:gap-2">
             {/* Theme toggle */}
             <button
               type="button"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="flex size-9 items-center justify-center rounded-xl text-white/70 transition-all duration-200 hover:bg-white/10 hover:text-white"
+              className="flex size-8 items-center justify-center rounded-xl text-white/70 transition-all duration-200 hover:bg-white/10 hover:text-white sm:size-9"
               aria-label="Toggle theme"
             >
               {mounted && theme === "dark" ? (
@@ -102,7 +102,7 @@ export function Header({ username }: { username: string }) {
                   profileOpen && "bg-white/10"
                 )}
               >
-                <div className="flex size-8 items-center justify-center rounded-full bg-white/20 text-sm font-semibold text-white ring-2 ring-white/10">
+                <div className="flex size-7 items-center justify-center rounded-full bg-white/20 text-xs font-semibold text-white ring-2 ring-white/10 sm:size-8 sm:text-sm">
                   {getInitials(username)}
                 </div>
                 <ChevronDown className="hidden size-3.5 text-white/60 transition-transform duration-200 sm:block" />

@@ -62,22 +62,22 @@ export function AboutSection() {
           <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             Developed By
           </p>
-          <ul className="space-y-2">
+          <ul className="space-y-1.5">
             {DEVELOPERS.map((dev) => (
               <li key={dev.github}>
                 <a
                   href={dev.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-foreground transition-colors duration-200 hover:text-aara-accent"
+                  className="inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
                 >
-                  <GithubIcon className="size-4 text-muted-foreground" />
+                  <GithubIcon className="size-3.5" />
                   {dev.name}
                 </a>
               </li>
             ))}
           </ul>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-[11px] text-muted-foreground/70">
             Designed and developed for Aara Clothing&apos;s internal inventory
             management system.
           </p>
