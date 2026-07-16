@@ -315,7 +315,6 @@ export async function updateOrderStatus(id: string, status: OrderStatus, userId:
     where: { id },
     include: {
       items: true,
-      user: { select: { id: true, username: true } },
     },
   });
   if (!existing) throw new Error("Order not found");
@@ -358,6 +357,10 @@ export async function updateOrderStatus(id: string, status: OrderStatus, userId:
   });
 
   // Send notifications to all other users
+  const actingUser = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { username: true },
+  });
   const orderNumber = existing.orderNumber;
   const statusLabel = ORDER_STATUS_LABELS[status];
   const notificationTitle = `Order #${orderNumber}`;
@@ -378,9 +381,9 @@ export async function updateOrderStatus(id: string, status: OrderStatus, userId:
         return `${variant.product.name} (${variant.color}/${variant.size}): ${variant.stock}`;
       })
     );
-    notificationBody = `Completed by ${existing.user?.username || 'a user'}. Current stock — ${stockInfo.join("; ")}`;
+    notificationBody = `Completed by ${actingUser?.username || 'a user'}. Current stock — ${stockInfo.join("; ")}`;
   } else {
-    notificationBody = `Status updated to "${statusLabel}" by ${existing.user?.username || 'a user'}`;
+    notificationBody = `Status updated to "${statusLabel}" by ${actingUser?.username || 'a user'}`;
   }
 
   // Get all users except the one who made the change
