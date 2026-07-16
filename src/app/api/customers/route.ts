@@ -34,7 +34,8 @@ export async function POST(request: Request) {
     await notifyAllUsers(
       "New Customer",
       `"${customer.name}" was added by ${username}`,
-      userId
+      userId,
+      "customer"
     );
 
     return successResponse(customer, "Customer created", 201);

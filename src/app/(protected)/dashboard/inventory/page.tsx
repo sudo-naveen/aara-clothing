@@ -6,6 +6,7 @@ import { ProductTable } from "@/features/inventory/product-table";
 import { Button } from "@/components/ui/button";
 import { FloatingActionButton } from "@/components/fab";
 import { Boxes, Plus } from "lucide-react";
+import { getLowStockThreshold } from "@/lib/settings";
 
 interface Props {
   searchParams: Promise<{ page?: string; search?: string }>;
@@ -19,9 +20,10 @@ export default async function InventoryPage({ searchParams }: Props) {
     search,
   });
 
-  const [result, variantsInUse] = await Promise.all([
+  const [result, variantsInUse, lowStockThreshold] = await Promise.all([
     listProducts(query),
     getVariantsInUse(),
+    getLowStockThreshold(),
   ]);
 
   const rows = result.data.map((p) => ({
@@ -65,6 +67,7 @@ export default async function InventoryPage({ searchParams }: Props) {
           page={result.page}
           totalPages={result.totalPages}
           search={query.search ?? ""}
+          lowStockThreshold={lowStockThreshold}
         />
       </Suspense>
       <FloatingActionButton

@@ -2,11 +2,13 @@ import { prisma } from "@/lib/prisma";
 import { sendNotification } from "./notifications-service";
 import { createNotification } from "./notifications-db-service";
 import { STOCK_THRESHOLDS } from "@/lib/constants";
+import { getLowStockThreshold } from "@/lib/settings";
 
 export async function notifyAllUsers(
   title: string,
   body: string,
-  excludeUserId?: string
+  excludeUserId?: string,
+  tag?: string
 ) {
   const where = excludeUserId ? { id: { not: excludeUserId } } : {};
   const users = await prisma.user.findMany({ where, select: { id: true } });
@@ -14,31 +16,29 @@ export async function notifyAllUsers(
   await Promise.all(
     users.map(async (user) => {
       await createNotification(user.id, title, body);
-      await sendNotification(user.id, title, body).catch(() => {});
+      await sendNotification(user.id, title, body, undefined, tag).catch(() => {});
     })
   );
 }
 
-export async function checkAndNotifyLowStock(
-  variantId: string,
-  currentStock: number
-) {
-  if (currentStock > STOCK_THRESHOLDS.LOW) return;
+export async function checkAndNotifyLowStock(variants: { id: string; stock: number }[]) {
+  const lowThreshold = await getLowStockThreshold();
+  const lowVariants = variants.filter((v) => v.stock <= lowThreshold);
+  if (lowVariants.length === 0) return;
 
-  const variant = await prisma.productVariant.findUnique({
-    where: { id: variantId },
-    include: {
-      product: { select: { name: true } },
-    },
+  const details = await prisma.productVariant.findMany({
+    where: { id: { in: lowVariants.map((v) => v.id) } },
+    include: { product: { select: { name: true } } },
   });
 
-  if (!variant) return;
+  const lines = details.map((v) => {
+    const stock = lowVariants.find((lv) => lv.id === v.id)!.stock;
+    const status = stock === STOCK_THRESHOLDS.OUT ? "OUT OF STOCK" : "low";
+    return `${v.product.name} (${v.color}/${v.size}): ${status} — ${stock} left`;
+  });
 
-  const status = currentStock === STOCK_THRESHOLDS.OUT ? "out of stock" : "low";
-  const title = currentStock === STOCK_THRESHOLDS.OUT
-    ? "Out of Stock"
-    : "Low Stock Alert";
-  const body = `${variant.product.name} (${variant.color}/${variant.size}) is ${status}: ${currentStock} remaining`;
+  const title = "Stock Alert";
+  const body = lines.join("\n");
 
-  await notifyAllUsers(title, body);
+  await notifyAllUsers(title, body, undefined, "stock-alert");
 }

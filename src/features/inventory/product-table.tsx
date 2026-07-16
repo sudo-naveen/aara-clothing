@@ -35,10 +35,11 @@ interface Props {
   page: number;
   totalPages: number;
   search: string;
+  lowStockThreshold?: number;
 }
 
-function StockBadge({ stock }: { stock: number }) {
-  const status = getStockStatus(stock);
+function StockBadge({ stock, lowStockThreshold }: { stock: number; lowStockThreshold?: number }) {
+  const status = getStockStatus(stock, lowStockThreshold);
   const variantMap = {
     in_stock: "success" as const,
     low_stock: "warning" as const,
@@ -51,7 +52,7 @@ function StockBadge({ stock }: { stock: number }) {
   );
 }
 
-export function ProductTable({ data, variantsInUse, page, totalPages, search }: Props) {
+export function ProductTable({ data, variantsInUse, page, totalPages, search, lowStockThreshold }: Props) {
   const router = useRouter();
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -192,7 +193,7 @@ export function ProductTable({ data, variantsInUse, page, totalPages, search }: 
                           {inUse > 0 && (
                             <Badge variant="warning" className="text-[10px]">In Use: {inUse}</Badge>
                           )}
-                          <StockBadge stock={v.stock} />
+                           <StockBadge stock={v.stock} lowStockThreshold={lowStockThreshold} />
                         </div>
                       </div>
                     );

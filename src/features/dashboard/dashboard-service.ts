@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma";
 import { STOCK_THRESHOLDS } from "@/lib/constants";
+import { getLowStockThreshold } from "@/lib/settings";
 
 export async function getDashboardStats() {
+  const lowThreshold = await getLowStockThreshold();
   const orderWhere = { customer: { is: {} } };
 
   const [
@@ -28,7 +30,7 @@ export async function getDashboardStats() {
     prisma.productVariant.count({
       where: {
         product: { deletedAt: null },
-        stock: { gt: STOCK_THRESHOLDS.OUT, lte: STOCK_THRESHOLDS.LOW },
+        stock: { gt: STOCK_THRESHOLDS.OUT, lte: lowThreshold },
       },
     }),
     prisma.productVariant.count({

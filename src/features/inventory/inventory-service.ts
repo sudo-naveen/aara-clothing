@@ -215,7 +215,7 @@ export async function updateStock(id: string, input: UpdateStockInput) {
     },
   });
 
-  await checkAndNotifyLowStock(id, input.stock);
+  await checkAndNotifyLowStock([{ id, stock: input.stock }]);
 
   return updated;
 }
@@ -256,7 +256,7 @@ export async function adjustStock(id: string, amount: number) {
     });
 
     // Check after transaction completes
-    await checkAndNotifyLowStock(id, newStock);
+    await checkAndNotifyLowStock([{ id, stock: newStock }]);
 
     return updated;
   });

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { listInventory } from "@/features/inventory/inventory-service";
 import { inventoryQuerySchema } from "@/features/inventory/inventory-validation";
 import { InventoryTable } from "@/features/inventory/inventory-table";
+import { getLowStockThreshold } from "@/lib/settings";
 
 export default async function InventoryStockPage({
   searchParams,
@@ -15,7 +16,10 @@ export default async function InventoryStockPage({
     search: params.search ?? "",
   });
 
-  const result = await listInventory(query);
+  const [result, lowStockThreshold] = await Promise.all([
+    listInventory(query),
+    getLowStockThreshold(),
+  ]);
 
   return (
     <div className="space-y-4 p-4 sm:space-y-6 sm:p-8">
@@ -31,6 +35,7 @@ export default async function InventoryStockPage({
           page={result.page}
           totalPages={result.totalPages}
           search={query.search ?? ""}
+          lowStockThreshold={lowStockThreshold}
         />
       </Suspense>
     </div>

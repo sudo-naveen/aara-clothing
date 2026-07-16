@@ -130,3 +130,9 @@ enum OrderStatus {
   PROCESSING
   DONE
 }
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

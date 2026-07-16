@@ -4,9 +4,11 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body,
-    icon: '/aara-logo.svg',
-    badge: '/aara-logo.svg',
+    icon: '/aara-logo.jpg',
+    badge: '/aara-logo.jpg',
     data: { orderId: data.orderId, url: data.url || '/dashboard' },
+    tag: data.tag || 'default',
+    renotify: true,
     actions: [
       { action: 'open', title: 'View' },
       { action: 'dismiss', title: 'Dismiss' }

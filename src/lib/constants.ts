@@ -45,9 +45,9 @@ export const STOCK_THRESHOLDS = {
 
 export type StockStatus = "in_stock" | "low_stock" | "out_of_stock";
 
-export function getStockStatus(stock: number): StockStatus {
+export function getStockStatus(stock: number, lowThreshold: number = STOCK_THRESHOLDS.LOW): StockStatus {
   if (stock <= STOCK_THRESHOLDS.OUT) return "out_of_stock";
-  if (stock <= STOCK_THRESHOLDS.LOW) return "low_stock";
+  if (stock <= lowThreshold) return "low_stock";
   return "in_stock";
 }
 

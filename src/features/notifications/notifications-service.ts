@@ -36,7 +36,7 @@ export async function removePushSubscription(endpoint: string) {
   return prisma.pushSubscription.deleteMany({ where: { endpoint } });
 }
 
-export async function sendNotification(userId: string, title: string, body: string, orderId?: string) {
+export async function sendNotification(userId: string, title: string, body: string, orderId?: string, tag?: string) {
   const subscriptions = await prisma.pushSubscription.findMany({
     where: { userId },
   });
@@ -45,6 +45,7 @@ export async function sendNotification(userId: string, title: string, body: stri
     title,
     body,
     orderId,
+    tag: tag || 'default',
     url: orderId ? `/dashboard` : '/dashboard',
   });
 
@@ -77,12 +78,12 @@ export async function sendNotification(userId: string, title: string, body: stri
   return { sent: results.length, failed: failedEndpoints.length };
 }
 
-export async function sendNotificationToAllUsers(title: string, body: string, orderId?: string, excludeUserId?: string) {
+export async function sendNotificationToAllUsers(title: string, body: string, orderId?: string, excludeUserId?: string, tag?: string) {
   const where = excludeUserId ? { id: { not: excludeUserId } } : {};
   const users = await prisma.user.findMany({ where, select: { id: true } });
 
   const results = await Promise.allSettled(
-    users.map((user) => sendNotification(user.id, title, body, orderId))
+    users.map((user) => sendNotification(user.id, title, body, orderId, tag))
   );
 
   return {

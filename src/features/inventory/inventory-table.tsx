@@ -29,10 +29,11 @@ interface Props {
   page: number;
   totalPages: number;
   search: string;
+  lowStockThreshold?: number;
 }
 
-function StockBadge({ stock }: { stock: number }) {
-  const status = getStockStatus(stock);
+function StockBadge({ stock, lowStockThreshold }: { stock: number; lowStockThreshold?: number }) {
+  const status = getStockStatus(stock, lowStockThreshold);
   const variantMap = {
     in_stock: "success" as const,
     low_stock: "warning" as const,
@@ -46,7 +47,7 @@ function StockBadge({ stock }: { stock: number }) {
   );
 }
 
-export function InventoryTable({ data, page, totalPages, search }: Props) {
+export function InventoryTable({ data, page, totalPages, search, lowStockThreshold }: Props) {
   const router = useRouter();
   const [editingVariant, setEditingVariant] = useState<InventoryRow | null>(
     null
@@ -72,7 +73,7 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
       key: "stock",
       header: "Stock",
       className: "text-center",
-      cell: (item) => <StockBadge stock={item.stock} />,
+      cell: (item) => <StockBadge stock={item.stock} lowStockThreshold={lowStockThreshold} />,
     },
     {
       key: "actions",
@@ -143,7 +144,7 @@ export function InventoryTable({ data, page, totalPages, search }: Props) {
                   </span>
                 </div>
                 <div className="mt-1.5">
-                  <StockBadge stock={item.stock} />
+                  <StockBadge stock={item.stock} lowStockThreshold={lowStockThreshold} />
                 </div>
               </div>
               <Button

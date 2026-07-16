@@ -63,7 +63,8 @@ export async function DELETE(
     await notifyAllUsers(
       "Customer Removed",
       `"${existing.name}" was removed by ${username}`,
-      userId
+      userId,
+      "customer"
     );
 
     return successResponse(null, "Customer deleted");

@@ -183,16 +183,13 @@ export async function createOrder(input: CreateOrderInput, userId: string) {
     });
   });
 
-  // Check for low stock on each ordered variant
-  for (const item of input.items) {
-    const variant = await prisma.productVariant.findUnique({
-      where: { id: item.variantId },
-      select: { stock: true },
-    });
-    if (variant) {
-      await checkAndNotifyLowStock(item.variantId, variant.stock);
-    }
-  }
+  // Check for low stock on all ordered variants at once
+  const orderedVariantIds = input.items.map((i) => i.variantId);
+  const currentVariants = await prisma.productVariant.findMany({
+    where: { id: { in: orderedVariantIds } },
+    select: { id: true, stock: true },
+  });
+  await checkAndNotifyLowStock(currentVariants);
 
   return order;
 }
@@ -395,7 +392,7 @@ export async function updateOrderStatus(id: string, status: OrderStatus, userId:
   // Create notifications in DB and send push notifications
   for (const user of otherUsers) {
     await createNotification(user.id, notificationTitle, notificationBody, id);
-    await sendNotification(user.id, notificationTitle, notificationBody, id).catch(() => {
+    await sendNotification(user.id, notificationTitle, notificationBody, id, `order-${id}`).catch(() => {
       // Ignore push notification errors - they're best effort
     });
   }
