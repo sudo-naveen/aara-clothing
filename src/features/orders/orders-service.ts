@@ -7,6 +7,7 @@ import type {
 } from "./orders-validation";
 import { sendNotification } from "@/features/notifications/notifications-service";
 import { createNotification } from "@/features/notifications/notifications-db-service";
+import { checkAndNotifyLowStock } from "@/features/notifications/notify-all";
 
 export async function listOrders(query: OrderQuery) {
   const { page, limit, search, customerId } = query;
@@ -182,6 +183,17 @@ export async function createOrder(input: CreateOrderInput, userId: string) {
     });
   });
 
+  // Check for low stock on each ordered variant
+  for (const item of input.items) {
+    const variant = await prisma.productVariant.findUnique({
+      where: { id: item.variantId },
+      select: { stock: true },
+    });
+    if (variant) {
+      await checkAndNotifyLowStock(item.variantId, variant.stock);
+    }
+  }
+
   return order;
 }
 
@@ -349,7 +361,27 @@ export async function updateOrderStatus(id: string, status: OrderStatus, userId:
   const orderNumber = existing.orderNumber;
   const statusLabel = ORDER_STATUS_LABELS[status];
   const notificationTitle = `Order #${orderNumber}`;
-  const notificationBody = `Status updated to "${statusLabel}" by ${existing.user?.username || 'a user'}`;
+
+  let notificationBody: string;
+
+  if (status === "DONE") {
+    // Include stock info for each ordered item
+    const stockInfo = await Promise.all(
+      existing.items.map(async (item) => {
+        const variant = await prisma.productVariant.findUnique({
+          where: { id: item.variantId },
+          include: {
+            product: { select: { name: true } },
+          },
+        });
+        if (!variant) return `${item.variantId}: unknown`;
+        return `${variant.product.name} (${variant.color}/${variant.size}): ${variant.stock}`;
+      })
+    );
+    notificationBody = `Completed by ${existing.user?.username || 'a user'}. Current stock — ${stockInfo.join("; ")}`;
+  } else {
+    notificationBody = `Status updated to "${statusLabel}" by ${existing.user?.username || 'a user'}`;
+  }
 
   // Get all users except the one who made the change
   const otherUsers = await prisma.user.findMany({

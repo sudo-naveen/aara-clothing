@@ -6,6 +6,7 @@ import type {
   InventoryQuery,
   UpdateStockInput,
 } from "./inventory-validation";
+import { checkAndNotifyLowStock } from "@/features/notifications/notify-all";
 
 export async function getVariantsInUse(): Promise<Map<string, { inUse: number; ordered: number }>> {
   const [processingRows, notStartedRows] = await Promise.all([
@@ -204,7 +205,7 @@ export async function updateStock(id: string, input: UpdateStockInput) {
     throw new Error("Cannot update stock for a deleted product");
   }
 
-  return prisma.productVariant.update({
+  const updated = await prisma.productVariant.update({
     where: { id },
     data: { stock: input.stock },
     include: {
@@ -213,6 +214,10 @@ export async function updateStock(id: string, input: UpdateStockInput) {
       },
     },
   });
+
+  await checkAndNotifyLowStock(id, input.stock);
+
+  return updated;
 }
 
 export async function adjustStock(id: string, amount: number) {
@@ -240,7 +245,7 @@ export async function adjustStock(id: string, amount: number) {
       );
     }
 
-    return tx.productVariant.update({
+    const updated = await tx.productVariant.update({
       where: { id },
       data: { stock: newStock },
       include: {
@@ -249,5 +254,10 @@ export async function adjustStock(id: string, amount: number) {
         },
       },
     });
+
+    // Check after transaction completes
+    await checkAndNotifyLowStock(id, newStock);
+
+    return updated;
   });
 }

@@ -2,6 +2,7 @@ import { successResponse, errorResponse } from "@/lib/api-response";
 import { requireAuth } from "@/lib/auth-guard";
 import { listCustomers, createCustomer } from "@/features/customers/customers-service";
 import { createCustomerSchema, customerQuerySchema } from "@/features/customers/customers-validation";
+import { notifyAllUsers } from "@/features/notifications/notify-all";
 
 export async function GET(request: Request) {
   try {
@@ -25,9 +26,17 @@ export async function POST(request: Request) {
     const authResult = await requireAuth();
     if ("error" in authResult) return authResult.error;
 
+    const { userId, username } = authResult;
     const body = await request.json();
     const input = createCustomerSchema.parse(body);
     const customer = await createCustomer(input);
+
+    await notifyAllUsers(
+      "New Customer",
+      `"${customer.name}" was added by ${username}`,
+      userId
+    );
+
     return successResponse(customer, "Customer created", 201);
   } catch (error) {
     if (error instanceof Error) {

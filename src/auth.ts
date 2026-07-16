@@ -62,7 +62,7 @@ export const {
         token.id = user.id;
         token.name = user.name;
         token.username = (user as { username: string }).username;
-        token.isAdmin = (user as { isAdmin: boolean }).isAdmin;
+        token.isAdmin = user.isAdmin;
       }
       if (trigger === "update" && session?.name) {
         token.name = session.name;
@@ -73,8 +73,8 @@ export const {
       if (session.user) {
         session.user.id = token.id as string;
         session.user.name = token.name as string | null;
-        (session.user as { username: string }).username = token.username as string;
-        (session.user as unknown as { isAdmin: boolean }).isAdmin = token.isAdmin as boolean;
+        session.user.username = token.username as string;
+        session.user.isAdmin = token.isAdmin as boolean;
       }
       return session;
     },
